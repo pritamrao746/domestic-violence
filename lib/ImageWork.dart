@@ -17,6 +17,8 @@ class ImageCapture extends StatefulWidget {
 class _ImageCaptureState extends State<ImageCapture> {
   File _image, _picked;
   final picker = ImagePicker();
+  String _downloadUrl;
+
 
   Future<void> getImage(ImageSource source) async {
     final pickedFile = await picker.getImage(source: source);
@@ -73,16 +75,20 @@ class _ImageCaptureState extends State<ImageCapture> {
 
   Future<void> uploadImageToCloud(String filePath) async {
     File largeFile = File(filePath);
+    String downloadUrl;
 
-    firebase_storage.UploadTask task = firebase_storage.FirebaseStorage.instance
+    var ref = firebase_storage.FirebaseStorage.instance
         .ref()
-        .child('images/${DateTime.now()}.jpeg')
-        .putFile(largeFile);
+        .child('images/${DateTime.now()}.jpeg');
+
+
+    firebase_storage.UploadTask task = ref.putFile(largeFile);
 
     task.snapshotEvents.listen((firebase_storage.TaskSnapshot snapshot) {
       print('Task state: ${snapshot.state}');
       print(
-          'Progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100} %');
+          'Progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) *
+              100} %');
     }, onError: (e) {
       // The final snapshot is also available on the task via `.snapshot`,
       // this can include 2 additional states, `TaskState.error` & `TaskState.canceled`
@@ -93,6 +99,18 @@ class _ImageCaptureState extends State<ImageCapture> {
       } else {
         print('Some random error = $e');
       }
+    });
+
+    try {
+      await task;
+      downloadUrl = await ref.getDownloadURL();
+    } catch (e) {
+      print("Some Error occurred e=$e");
+    }
+
+    setState(() {
+      _downloadUrl = downloadUrl ?? _downloadUrl;
+      print("Download Url is $_downloadUrl");
     });
   }
 

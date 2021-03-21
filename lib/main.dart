@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:domestic_violence/VideoWork.dart';
+import 'package:domestic_violence/audio-work/AudioHomeView.dart';
 import 'package:domestic_violence/home_sidebar.dart';
 import 'package:domestic_violence/login_screen.dart';
 import 'package:domestic_violence/register.dart';
@@ -50,7 +51,9 @@ class MyApp extends StatelessWidget{
     return MaterialApp(
       title: 'Domestic Violence fight',
       routes: {
-        '/':(BuildContext context)=> VideoPage(title:"Video Upload"),
+        //'/':(BuildContext context)=> VideoPage(title:"Video Upload"),
+        //'/':(BuildContext context)=> ImageCapture(),
+        '/':(BuildContext context) => AudioHomeView(),
         '/register':(BuildContext context)=> Register_Screen(),
         '/login':(BuildContext context)=> Login_Screen(),
         '/home':(BuildContext context)=> Home_Screen(),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:firebase_core/firebase_core.dart' as firebase_core;
 
 class VideoPage extends StatefulWidget {
   final String title;
@@ -16,6 +17,7 @@ class VideoPage extends StatefulWidget {
 
 class _VideoPageState extends State<VideoPage> {
   String _counter = "video";
+  String _downloadUrl;
 
   Future<void> uploadVideo(String filePath) async {
     File largeFile = File(filePath);
@@ -24,25 +26,35 @@ class _VideoPageState extends State<VideoPage> {
         .ref()
         .child("videos/${DateTime.now()}.mp4");
 
+    var downloadUrl;
+
     firebase_storage.UploadTask task = ref.putFile(largeFile);
-    String downloadUrl = await (ref.getDownloadURL());
-    print("Video is stored at $downloadUrl");
 
     task.snapshotEvents.listen((firebase_storage.TaskSnapshot snapshot) {
-      print(snapshot.state);
       print('Task state: ${snapshot.state}');
       print(
           'Progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100} %');
     }, onError: (e) {
-      // The final snapshot is also available on the task via `.snapshot`,
-      // this can include 2 additional states, `TaskState.error` & `TaskState.canceled`
       print(task.snapshot);
-
       if (e.code == 'permission-denied') {
         print('User does not have permission to upload to this reference.');
-      } else {
-        print("Some random error which is $e");
       }
+    });
+
+    // We can still optionally use the Future alongside the stream.
+    try {
+      await task;
+      downloadUrl = await ref.getDownloadURL();
+      print('Upload complete. and DownloadUrl is $downloadUrl');
+    } on firebase_core.FirebaseException catch (e) {
+      if (e.code == 'permission-denied') {
+        print('User does not have permission to upload to this reference.');
+      }
+    }
+
+    setState(() {
+      _downloadUrl = downloadUrl ?? _downloadUrl;
+      print('SetState DownloadUrl is $downloadUrl');
     });
   }
 
