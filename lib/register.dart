@@ -1,5 +1,6 @@
 import 'package:domestic_violence/login_screen.dart';
 import 'package:domestic_violence/services/UserManagement.dart';
+import 'package:domestic_violence/services/UserSetup.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -70,22 +71,20 @@ class _Register_ScreenState extends State<Register_Screen> {
                   String email = emailController.text;
                   String password = passwordController.text;
 
-                  await FirebaseAuth.instance
-                      .createUserWithEmailAndPassword(
-                          email: email, password: password)
-                      .then((user) {
-                    UserData udata =
-                        new UserData(name, nickname, mobile, password);
-                    udata.storeNewUserData(context);
-                  }).catchError((e) {
-                    if (e.code == 'weak-password') {
-                      print('The password provided is too weak.');
-                    } else if (e.code == 'email-already-in-use') {
-                      print('The account already exists for that email.');
-                    } else {
-                      print("Error is $e");
-                    }
-                  });
+                  try{
+                    await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+                    User user = FirebaseAuth.instance.currentUser;
+                    user.updateProfile(displayName: name);
+                    userSetup(name, password, mobile, nickname);
+
+                    Navigator.popUntil(context, ModalRoute.withName('/'));
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, '/login');
+
+                  } catch(e){
+                    print("Error during registration is ${e.toString()}");
+                  }
+
                 },
                 color: logoGreen,
                 child: Text('Register',

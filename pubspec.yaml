@@ -43,6 +43,8 @@ dependencies:
   path_provider: ^1.6.27
   audioplayers: ^0.17.2
 
+  # encryption
+  encrypt: ^4.1.0
 
   font_awesome_flutter:
   google_fonts:

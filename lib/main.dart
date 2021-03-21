@@ -53,7 +53,8 @@ class MyApp extends StatelessWidget{
       routes: {
         //'/':(BuildContext context)=> VideoPage(title:"Video Upload"),
         //'/':(BuildContext context)=> ImageCapture(),
-        '/':(BuildContext context) => AudioHomeView(),
+        //'/':(BuildContext context) => AudioHomeView(),
+        '/':(BuildContext context)=> HomePage(),
         '/register':(BuildContext context)=> Register_Screen(),
         '/login':(BuildContext context)=> Login_Screen(),
         '/home':(BuildContext context)=> Home_Screen(),
