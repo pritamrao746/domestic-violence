@@ -6,6 +6,14 @@ import 'package:video_compress/video_compress.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_core/firebase_core.dart' as firebase_core;
 
+// For encryption decryption purpose
+import 'package:encrypt/encrypt.dart' as enc;
+import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
+import 'dart:typed_data' show Uint8List;
+import 'package:domestic_violence/MyEncrpytClass.dart';
+import 'package:video_player/video_player.dart';
+
 class VideoPage extends StatefulWidget {
   final String title;
 
@@ -16,19 +24,25 @@ class VideoPage extends StatefulWidget {
 }
 
 class _VideoPageState extends State<VideoPage> {
-  String _counter = "video";
+  String _counter = null;
   String _downloadUrl;
+  var decr;
+  bool isDecrypted = false;
 
   Future<void> uploadVideo(String filePath) async {
+    print("Compressed Path is $filePath");
     File largeFile = File(filePath);
-
+    var downloadUrl;
     var ref = firebase_storage.FirebaseStorage.instance
         .ref()
-        .child("videos/${DateTime.now()}.mp4");
+        .child("videos/${DateTime.now()}.text");
 
-    var downloadUrl;
+    // Reading and encrypting the data
+    Uint8List fileData = largeFile.readAsBytesSync();
+    Uint8List fileEncryptedData =
+        MyEncrypt.myEncrypter.encryptBytes(fileData, iv: MyEncrypt.myIv).bytes;
 
-    firebase_storage.UploadTask task = ref.putFile(largeFile);
+    firebase_storage.UploadTask task = ref.putData(fileEncryptedData);
 
     task.snapshotEvents.listen((firebase_storage.TaskSnapshot snapshot) {
       print('Task state: ${snapshot.state}');
@@ -45,7 +59,28 @@ class _VideoPageState extends State<VideoPage> {
     try {
       await task;
       downloadUrl = await ref.getDownloadURL();
+      _downloadUrl = downloadUrl;
       print('Upload complete. and DownloadUrl is $downloadUrl');
+
+      print("Encrypted = $fileEncryptedData");
+
+      // Decrypting Data
+      if (await canLaunch(downloadUrl)) {
+        print("Data downloading....");
+        var resp = await http.get(downloadUrl);
+        enc.Encrypted encc = enc.Encrypted(resp.bodyBytes);
+        print("RESP = ${resp.bodyBytes}");
+
+        List<int> decryptedData =
+            MyEncrypt.myEncrypter.decryptBytes(encc, iv: MyEncrypt.myIv);
+        Uint8List d = Uint8List.fromList(decryptedData);
+        decr = d;
+        isDecrypted = true;
+
+        print("DECRYPTED = ${decryptedData}");
+      } else {
+        print("Can't launch URL.");
+      }
     } on firebase_core.FirebaseException catch (e) {
       if (e.code == 'permission-denied') {
         print('User does not have permission to upload to this reference.');
@@ -68,18 +103,14 @@ class _VideoPageState extends State<VideoPage> {
         children: <Widget>[
           if (_counter != null) ...[
             FlatButton.icon(
-              label: Text('Compress Image'),
-              icon: Icon(Icons.compress),
-              onPressed: () => print("Nothing"),
-            ),
-            FlatButton.icon(
               label: Text('Upload to Firebase'),
               icon: Icon(Icons.cloud_upload),
               onPressed: () {
                 uploadVideo(_counter);
               },
             )
-          ]
+          ],
+          if (isDecrypted) ...[]
         ],
       ),
       floatingActionButton: FloatingActionButton(

@@ -9,6 +9,7 @@ import 'package:encrypt/encrypt.dart' as enc;
 import 'dart:typed_data' show Uint8List;
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:domestic_violence/MyEncrpytClass.dart';
 
 // Widget to capture and crop the image
 class ImageCapture extends StatefulWidget {
@@ -197,10 +198,4 @@ class _ImageCaptureState extends State<ImageCapture> {
       ),
     );
   }
-}
-
-class MyEncrypt {
-  static final myKey = enc.Key.fromUtf8('TechWithVPTechWithVPTechWithVP12');
-  static final myIv = enc.IV.fromUtf8("VivekPanchal1122");
-  static final myEncrypter = enc.Encrypter(enc.AES(myKey));
 }

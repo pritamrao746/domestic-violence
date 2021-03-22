@@ -6,8 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:path_provider/path_provider.dart';
 
+// For encryption decryption purpose
+import 'dart:typed_data' show Uint8List;
+import 'package:domestic_violence/MyEncrpytClass.dart';
+
 class FeatureButtonsView extends StatefulWidget {
   final Function onUploadComplete;
+
   const FeatureButtonsView({
     Key key,
     @required this.onUploadComplete,
@@ -28,6 +33,7 @@ class _FeatureButtonsViewState extends State<FeatureButtonsView> {
 
   FlutterAudioRecorder _audioRecorder;
 
+
   @override
   void initState() {
     super.initState();
@@ -41,40 +47,42 @@ class _FeatureButtonsViewState extends State<FeatureButtonsView> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: _isRecorded ? _isUploading ? Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: LinearProgressIndicator()),
-          Text('Uploading to Firebase'),
-        ],
-      )
-          : Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          IconButton(
-            icon: Icon(Icons.replay),
-            onPressed: _onRecordAgainButtonPressed,
-          ),
-          IconButton(
-            icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
-            onPressed: _onPlayButtonPressed,
-          ),
-          IconButton(
-            icon: Icon(Icons.upload_file),
-            onPressed: _onFileUploadButtonPressed,
-          ),
-        ],
-      )
+      child: _isRecorded
+          ? _isUploading
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: LinearProgressIndicator()),
+                    Text('Uploading to Firebase'),
+                  ],
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.replay),
+                      onPressed: _onRecordAgainButtonPressed,
+                    ),
+                    IconButton(
+                      icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
+                      onPressed: _onPlayButtonPressed,
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.upload_file),
+                      onPressed: _onFileUploadButtonPressed,
+                    ),
+                  ],
+                )
           : IconButton(
-        icon: _isRecording
-            ? Icon(Icons.pause)
-            : Icon(Icons.fiber_manual_record),
-        onPressed: _onRecordButtonPressed,
-      ),
+              icon: _isRecording
+                  ? Icon(Icons.pause)
+                  : Icon(Icons.fiber_manual_record),
+              onPressed: _onRecordButtonPressed,
+            ),
     );
   }
 
@@ -84,17 +92,19 @@ class _FeatureButtonsViewState extends State<FeatureButtonsView> {
       _isUploading = true;
     });
     try {
-      await firebaseStorage
-          .ref('upload-voice-firebase')
-          .child(
-          _filePath.substring(_filePath.lastIndexOf('/'), _filePath.length))
-          .putFile(File(_filePath));
-      widget.onUploadComplete();  // This is the function which we passed from the main aap
+      var ref = firebaseStorage.ref('upload-voice-firebase').child(
+          _filePath.substring(_filePath.lastIndexOf('/'), _filePath.length));
+
+      // getting encrypted data
+      Uint8List encryptedData = encryptAudio(_filePath);
+
+      await ref.putData(encryptedData);
+      widget.onUploadComplete(); // This is the function which we passed from the main aap
     } catch (error) {
-      print('Error occured while uplaoding to Firebase ${error.toString()}');
+      print('Error occurred while uploading to Firebase ${error.toString()}');
       Scaffold.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error occured while uplaoding'),
+          content: Text('Error occurred while uploading'),
         ),
       );
     } finally {
@@ -143,7 +153,7 @@ class _FeatureButtonsViewState extends State<FeatureButtonsView> {
 
   Future<void> _startRecording() async {
     final bool hasRecordingPermission =
-    await FlutterAudioRecorder.hasPermissions;
+        await FlutterAudioRecorder.hasPermissions;
     if (hasRecordingPermission) {
       Directory directory = await getApplicationDocumentsDirectory();
       String filepath = directory.path +
@@ -164,4 +174,14 @@ class _FeatureButtonsViewState extends State<FeatureButtonsView> {
       ));
     }
   }
+
+  Uint8List encryptAudio(String filepath) {
+    File file = File(filepath);
+    Uint8List data = file.readAsBytesSync();
+    Uint8List  encryptedData = MyEncrypt.myEncrypter.encryptBytes(data, iv: MyEncrypt.myIv).bytes;
+    print("ENCRYPTED DATA = $encryptedData");
+    return encryptedData;
+  }
+
+
 }
