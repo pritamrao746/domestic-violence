@@ -5,6 +5,10 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:encrypt/encrypt.dart' as enc;
+import 'dart:typed_data' show Uint8List;
+import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 // Widget to capture and crop the image
 class ImageCapture extends StatefulWidget {
@@ -18,7 +22,8 @@ class _ImageCaptureState extends State<ImageCapture> {
   File _image, _picked;
   final picker = ImagePicker();
   String _downloadUrl;
-
+  var decr;
+  bool isDecrypted = false;
 
   Future<void> getImage(ImageSource source) async {
     final pickedFile = await picker.getImage(source: source);
@@ -75,20 +80,24 @@ class _ImageCaptureState extends State<ImageCapture> {
 
   Future<void> uploadImageToCloud(String filePath) async {
     File largeFile = File(filePath);
+
+    // encrypting the image
+    Uint8List data = largeFile.readAsBytesSync();
+    final encryptedData =
+        MyEncrypt.myEncrypter.encryptBytes(data, iv: MyEncrypt.myIv).bytes;
+
     String downloadUrl;
 
     var ref = firebase_storage.FirebaseStorage.instance
         .ref()
-        .child('images/${DateTime.now()}.jpeg');
+        .child('images/${DateTime.now()}.text');
 
-
-    firebase_storage.UploadTask task = ref.putFile(largeFile);
+    firebase_storage.UploadTask task = ref.putData(encryptedData);
 
     task.snapshotEvents.listen((firebase_storage.TaskSnapshot snapshot) {
       print('Task state: ${snapshot.state}');
       print(
-          'Progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) *
-              100} %');
+          'Progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100} %');
     }, onError: (e) {
       // The final snapshot is also available on the task via `.snapshot`,
       // this can include 2 additional states, `TaskState.error` & `TaskState.canceled`
@@ -104,6 +113,26 @@ class _ImageCaptureState extends State<ImageCapture> {
     try {
       await task;
       downloadUrl = await ref.getDownloadURL();
+      print("DATA = $encryptedData");
+
+      // Decryption trying
+
+      if (await canLaunch(downloadUrl)) {
+        print("Data downloading....");
+        var resp = await http.get(downloadUrl);
+        enc.Encrypted encc = enc.Encrypted(resp.bodyBytes);
+        print("RESP = ${resp.bodyBytes}");
+
+        List<int> decryptedData =
+            MyEncrypt.myEncrypter.decryptBytes(encc, iv: MyEncrypt.myIv);
+        Uint8List d = Uint8List.fromList(decryptedData);
+        decr = d;
+        isDecrypted = true;
+
+        print("DECRYPTED = ${decryptedData}");
+      } else {
+        print("Can't launch URL.");
+      }
     } catch (e) {
       print("Some Error occurred e=$e");
     }
@@ -161,10 +190,17 @@ class _ImageCaptureState extends State<ImageCapture> {
               onPressed: () {
                 uploadImageToCloud(_image.path);
               },
-            )
+            ),
+            if (isDecrypted) ...[Image.memory(decr)]
           ]
         ],
       ),
     );
   }
+}
+
+class MyEncrypt {
+  static final myKey = enc.Key.fromUtf8('TechWithVPTechWithVPTechWithVP12');
+  static final myIv = enc.IV.fromUtf8("VivekPanchal1122");
+  static final myEncrypter = enc.Encrypter(enc.AES(myKey));
 }

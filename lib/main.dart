@@ -52,9 +52,9 @@ class MyApp extends StatelessWidget{
       title: 'Domestic Violence fight',
       routes: {
         //'/':(BuildContext context)=> VideoPage(title:"Video Upload"),
-        //'/':(BuildContext context)=> ImageCapture(),
+        '/':(BuildContext context)=> ImageCapture(),
         //'/':(BuildContext context) => AudioHomeView(),
-        '/':(BuildContext context)=> HomePage(),
+        //'/':(BuildContext context)=> HomePage(),
         '/register':(BuildContext context)=> Register_Screen(),
         '/login':(BuildContext context)=> Login_Screen(),
         '/home':(BuildContext context)=> Home_Screen(),
