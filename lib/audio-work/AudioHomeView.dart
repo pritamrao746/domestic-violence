@@ -23,9 +23,7 @@ class _AudioHomeViewState extends State<AudioHomeView> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('Upload Example'),
-        ),
+
         body: Column(
           children: [
             Expanded(

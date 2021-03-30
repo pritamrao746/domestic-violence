@@ -9,6 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:domestic_violence/tic_tac_toe.dart';
 import 'package:domestic_violence/ImageWork.dart';
+import 'package:domestic_violence/home-views/posts.dart';
+import 'package:domestic_violence/home-views/evidence.dart';
+import 'package:domestic_violence/home-views/ngo.dart';
+import 'package:domestic_violence/home-views/videos.dart';
+import 'package:domestic_violence/home-views/emergency.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -61,6 +66,11 @@ class MyApp extends StatelessWidget {
         '/register': (BuildContext context) => Register_Screen(),
         '/login': (BuildContext context) => Login_Screen(),
         '/home': (BuildContext context) => Home_Screen(),
+        '/posts':(BuildContext context) => Posts(),
+        '/evidence':(BuildContext context) => Evidence(),
+        '/ngo':(BuildContext context) => NGO(),
+        '/education':(BuildContext context) => Videos(),
+        '/emergency':(BuildContext context) => Emergency(),
       },
     );
   }
