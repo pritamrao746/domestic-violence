@@ -4,11 +4,13 @@ import 'package:domestic_violence/audio-work/AudioHomeView.dart';
 import 'package:domestic_violence/home_sidebar.dart';
 import 'package:domestic_violence/login_screen.dart';
 import 'package:domestic_violence/register.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:domestic_violence/tic_tac_toe.dart';
 import 'package:domestic_violence/ImageWork.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,7 +30,8 @@ class App extends StatelessWidget {
       builder: (context, snapshot) {
         // Check for errors
         if (snapshot.hasError) {
-          print("\n\n\nConnection Error of firebase! Please try again in a moment !!\n\n\n");
+          print(
+              "\n\n\nConnection Error of firebase! Please try again in a moment !!\n\n\n");
         }
 
         // Once complete, show your application
@@ -45,37 +48,36 @@ class App extends StatelessWidget {
   }
 }
 
-class MyApp extends StatelessWidget{
+class MyApp extends StatelessWidget {
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Domestic Violence fight',
       routes: {
-        //'/':(BuildContext context)=> VideoPage(title:"Video Upload"),
-        //'/':(BuildContext context)=> ImageCapture(),
-        '/':(BuildContext context) => AudioHomeView(),
-        //'/':(BuildContext context)=> HomePage(),
-        '/register':(BuildContext context)=> Register_Screen(),
-        '/login':(BuildContext context)=> Login_Screen(),
-        '/home':(BuildContext context)=> Home_Screen(),
+        '/video': (BuildContext context) => VideoPage(title: "Video Upload"),
+        '/image': (BuildContext context) => ImageCapture(),
+        '/audio': (BuildContext context) => AudioHomeView(),
+        '/': (BuildContext context) => HomePage(),
+        '/register': (BuildContext context) => Register_Screen(),
+        '/login': (BuildContext context) => Login_Screen(),
+        '/home': (BuildContext context) => Home_Screen(),
       },
     );
   }
 }
 
 class HomePage extends StatelessWidget {
-
-  final Color primaryColor=Color(0xff18203d);
+  final Color primaryColor = Color(0xff18203d);
   final Color secondaryColor = Color(0xff232c51);
-  final Color logoGreen=Color(0xff25bcbb);
+  final Color logoGreen = Color(0xff25bcbb);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: primaryColor,
-      body:Container(
-        margin:EdgeInsets.symmetric(horizontal: 40),
-        child:Column(
+      body: Container(
+        margin: EdgeInsets.symmetric(horizontal: 40),
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             //We take the image from the assets
@@ -101,9 +103,9 @@ class HomePage extends StatelessWidget {
             MaterialButton(
               elevation: 10,
               height: 50,
-              onPressed:(){
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => TicTacToe()));
+              onPressed: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (_) => TicTacToe()));
               },
               color: logoGreen,
               child: Row(
@@ -122,5 +124,3 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-
-
