@@ -54,7 +54,7 @@ class _Login_ScreenState extends State<Login_Screen> {
               _buildTextField(
                   emailController, Icons.account_circle, 'Email'),
               SizedBox(height: 20),
-              _buildTextField(passwordController, Icons.lock, 'Password'),
+              _buildPasswordField(passwordController, Icons.lock, 'Password'),
               SizedBox(height: 30),
               MaterialButton(
                 elevation: 0,
@@ -142,6 +142,30 @@ class _Login_ScreenState extends State<Login_Screen> {
       decoration: BoxDecoration(
           color: secondaryColor, border: Border.all(color: Colors.blue)),
       child: TextField(
+        controller: controller,
+        style: TextStyle(color: Colors.white),
+        decoration: InputDecoration(
+            contentPadding: EdgeInsets.symmetric(horizontal: 10),
+            labelText: labelText,
+            labelStyle: TextStyle(color: Colors.white),
+            icon: Icon(
+              icon,
+              color: Colors.white,
+            ),
+            // prefix: Icon(icon),
+            border: InputBorder.none),
+      ),
+    );
+  }
+
+  _buildPasswordField(
+      TextEditingController controller, IconData icon, String labelText) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+          color: secondaryColor, border: Border.all(color: Colors.blue)),
+      child: TextField(
+        obscureText: true,
         controller: controller,
         style: TextStyle(color: Colors.white),
         decoration: InputDecoration(

@@ -30,8 +30,6 @@ class _NGOState extends State<NGO> {
   double topContainer = 0;
   List<Widget> itemsData=[];
 
-
-
   void getPostsData() {
     List<dynamic> responseList = emer_cont;
     List<Widget> listItems = [];

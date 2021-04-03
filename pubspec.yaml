@@ -28,6 +28,7 @@ dependencies:
   firebase_auth:
   cloud_firestore:
   firebase_storage: ^7.0.0
+  flushbar: ^1.10.4
 
   ## Images
   image_cropper:

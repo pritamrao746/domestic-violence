@@ -20,6 +20,8 @@ class _Register_ScreenState extends State<Register_Screen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController mobileController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController emer1Controller = TextEditingController();
+  final TextEditingController emer2Controller = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
@@ -28,6 +30,7 @@ class _Register_ScreenState extends State<Register_Screen> {
     return Scaffold(
       backgroundColor: primaryColor,
       appBar: AppBar(
+        title:Text('Sign Up!'),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -39,12 +42,8 @@ class _Register_ScreenState extends State<Register_Screen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Text(
-                'Sign up!',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.openSans(color: Colors.white, fontSize: 28),
-              ),
-              SizedBox(height: 20),
+
+              SizedBox(height: 10),
               _buildTextField(nameController, Icons.account_circle, 'Name'),
               SizedBox(height: 10),
               _buildTextField(
@@ -55,11 +54,15 @@ class _Register_ScreenState extends State<Register_Screen> {
               _buildTextField(
                   mobileController, Icons.account_circle, 'Mobile No'),
               SizedBox(height: 10),
-              _buildTextField(passwordController, Icons.lock, 'Password'),
+              _buildTextField(emer1Controller, Icons.account_circle, 'Emergency Contact 1'),
               SizedBox(height: 10),
-              _buildTextField(
+              _buildTextField(emer2Controller, Icons.account_circle, 'Emergency Contact 2'),
+              SizedBox(height: 10),
+              _buildPasswordField(passwordController, Icons.lock, 'Password'),
+              SizedBox(height: 10),
+              _buildPasswordField(
                   confirmPasswordController, Icons.lock, 'Confirm Password'),
-              SizedBox(height: 30),
+              SizedBox(height: 20),
               MaterialButton(
                 elevation: 0,
                 minWidth: double.maxFinite,
@@ -70,12 +73,14 @@ class _Register_ScreenState extends State<Register_Screen> {
                   String mobile = mobileController.text;
                   String email = emailController.text;
                   String password = passwordController.text;
+                  String cont1=emer1Controller.text;
+                  String cont2=emer2Controller.text;
 
                   try{
                     await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
                     User user = FirebaseAuth.instance.currentUser;
                     user.updateProfile(displayName: name);
-                    userSetup(name, password, mobile, nickname);
+                    userSetup(name, password, mobile, nickname,);
 
                     Navigator.popUntil(context, ModalRoute.withName('/'));
                     Navigator.pop(context);
@@ -98,7 +103,7 @@ class _Register_ScreenState extends State<Register_Screen> {
                 height: 50,
                 onPressed: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => Register_Screen()));
+                      MaterialPageRoute(builder: (_) => Login_Screen()));
                 },
                 color: Colors.blue,
                 child: Row(
@@ -125,6 +130,26 @@ class _Register_ScreenState extends State<Register_Screen> {
       decoration: BoxDecoration(
           color: secondaryColor, border: Border.all(color: Colors.blue)),
       child: TextField(
+        controller: controller,
+        style: TextStyle(color: Colors.white),
+        decoration: InputDecoration(
+            contentPadding: EdgeInsets.symmetric(horizontal: 10),
+            labelText: labelText,
+            labelStyle: TextStyle(color: Colors.white),
+
+            // prefix: Icon(icon),
+            border: InputBorder.none),
+      ),
+    );
+  }
+  _buildPasswordField(
+      TextEditingController controller, IconData icon, String labelText) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+          color: secondaryColor, border: Border.all(color: Colors.blue)),
+      child: TextField(
+        obscureText: true,
         controller: controller,
         style: TextStyle(color: Colors.white),
         decoration: InputDecoration(
