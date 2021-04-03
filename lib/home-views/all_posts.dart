@@ -1,34 +1,13 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:domestic_violence/home-views/comments.dart';
-import 'package:domestic_violence/home-views/savedposts.dart';
-import 'package:domestic_violence/home-views/myposts.dart';
-import 'package:domestic_violence/home-views/all_posts.dart';
-import 'package:domestic_violence/home-views/newposts.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-
-class Posts extends StatefulWidget {
+class AllPosts extends StatefulWidget {
   @override
-  _PostsState createState() => _PostsState();
+  _AllPostsState createState() => _AllPostsState();
 }
 
-class _PostsState extends State<Posts> {
-
-  final Color primaryColor=Color(0xff18203d);
-  final Color secondaryColor = Color(0xff232c51);
-  final Color logoGreen=Color(0xff25bcbb);
-
-  int _currentIndex=0;
-
-  final List<Widget> _children =[
-    AllPosts(),
-    MyPosts(),
-    SavedPosts(),
-    NewPosts(),
-
-  ];
+class _AllPostsState extends State<AllPosts> {
 
   Widget _buildPost(int index){
     return Padding(
@@ -172,49 +151,15 @@ class _PostsState extends State<Posts> {
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title:Text('Posts'),
-          backgroundColor: primaryColor,
-          actions:[
-            IconButton(icon: Icon(Icons.g_translate, color:Colors.white) ,onPressed: null)
-          ]
-      ),
-      backgroundColor:Color(0xFFEDF0F6),
-      body:_children[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          type:BottomNavigationBarType.fixed,
-          selectedFontSize: 20,
-          unselectedFontSize: 15,
-          backgroundColor: primaryColor,
-          items:[
-            BottomNavigationBarItem(
-              icon:Icon(Icons.account_circle,color: Colors.white,),
-              title:Text('Allposts',style:TextStyle(color:Colors.white)),
-            ),
-            BottomNavigationBarItem(
-              icon:Icon(Icons.account_circle,color: Colors.white,),
-              title:Text('Myposts',style:TextStyle(color:Colors.white)),
-            ),
-            BottomNavigationBarItem(
-              icon:Icon(Icons.favorite_border_outlined,color: Colors.white),
-              title:Text('Saved',style:TextStyle(color:Colors.white)),
-            ),
-            BottomNavigationBarItem(
-              icon:Icon(Icons.add_box_outlined,color: Colors.white),
-              title:Text('New',style:TextStyle(color:Colors.white)),
-            ),
-          ],
-        onTap: (index){
-          setState(() {
-            _currentIndex=index;
-          });
-        },
-      ),
+    return ListView(
+      physics:AlwaysScrollableScrollPhysics(),
+      children:[
+        _buildPost(0),
+        _buildPost(1),
+      ],
     );
   }
 }
-

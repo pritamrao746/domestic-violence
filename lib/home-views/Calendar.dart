@@ -17,6 +17,8 @@ class _CalendarState extends State<Calendar> {
   final Color secondaryColor = Color(0xff232c51);
   final Color logoGreen=Color(0xff25bcbb);
 
+  final date=DateTime.now();
+
   CalendarController _controller;
   TextStyle dayStyle(FontWeight fontWeight)
   {
@@ -38,7 +40,7 @@ class _CalendarState extends State<Calendar> {
               ),
               Container(
                 padding:EdgeInsets.only(left:20,right:10,top:40,bottom:10),
-                width:MediaQuery.of(context).size.width*0.8,
+                width:MediaQuery.of(context).size.width*0.6,
                 child:Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children:<Widget>[
@@ -61,12 +63,26 @@ class _CalendarState extends State<Calendar> {
                   ],
                 ),
               ),
-              Icon(
-                CupertinoIcons.delete,
-                color:Color(0xff00cf8d),
+              IconButton(
+                onPressed: (){},
+                icon: Icon(
+                  CupertinoIcons.play_arrow_solid,
+                  color:Color(0xff00cf8d),
 
-                size:20,
+                  size:20,
 
+                ),
+              ),
+              SizedBox(width:10,),
+              IconButton(
+                onPressed: (){},
+                icon: Icon(
+                  CupertinoIcons.delete,
+                  color:Color(0xff00cf8d),
+
+                  size:20,
+
+                ),
               ),
             ]
         )
@@ -147,7 +163,7 @@ class _CalendarState extends State<Calendar> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
                                     Padding(padding: EdgeInsets.only(top:50,),
-                                      child:Text("12th March 2021", style: TextStyle(
+                                      child:Text(date.toString(), style: TextStyle(
                                           color:Colors.white,
                                           fontSize:30,
                                           fontWeight: FontWeight.bold
