@@ -80,7 +80,7 @@ class _FeatureButtonsViewState extends State<FeatureButtonsView> {
           : IconButton(
               icon: _isRecording
                   ? Icon(Icons.pause)
-                  : Icon(Icons.fiber_manual_record),
+                  : Icon(Icons.add_box),
               onPressed: _onRecordButtonPressed,
             ),
     );

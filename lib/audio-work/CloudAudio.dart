@@ -40,10 +40,20 @@ class _CloudRecordListViewState extends State<CloudRecordListView> {
       itemBuilder: (BuildContext context, int index) {
         return ListTile(
           title: Text(widget.references.elementAt(index).name),
-          trailing: IconButton(
-            icon: _isPlaying ? Icon(Icons.pause) : Icon(Icons.play_arrow),
-            onPressed: () => _onListTileButtonPressed(index),
+          trailing: Wrap(
+            spacing:20,
+            children:[
+              IconButton(
+              icon: _isPlaying ? Icon(Icons.pause) : Icon(Icons.play_arrow),
+              onPressed: () => _onListTileButtonPressed(index),
+              ),
+              IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () => _onListTileButtonPressed(index),
+              ),
+            ],
           ),
+          
         );
       },
     );

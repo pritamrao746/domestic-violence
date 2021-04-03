@@ -28,6 +28,9 @@ class _VideoPageState extends State<VideoPage> {
   String _downloadUrl;
   var decr;
   bool isDecrypted = false;
+  final Color primaryColor=Color(0xff18203d);
+  final Color secondaryColor = Color(0xff232c51);
+  final Color logoGreen=Color(0xff25bcbb);
 
   Future<void> uploadVideo(String filePath) async {
     print("Compressed Path is $filePath");
@@ -112,6 +115,7 @@ class _VideoPageState extends State<VideoPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: primaryColor,
         onPressed: () async {
           final file =
               await ImagePicker().getVideo(source: ImageSource.gallery);
@@ -132,7 +136,7 @@ class _VideoPageState extends State<VideoPage> {
             });
           }
         },
-        tooltip: 'Increment',
+        tooltip: 'New Video',
         child: Icon(Icons.add),
       ),
     );

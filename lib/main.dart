@@ -14,6 +14,7 @@ import 'package:domestic_violence/home-views/evidence.dart';
 import 'package:domestic_violence/home-views/ngo.dart';
 import 'package:domestic_violence/home-views/videos.dart';
 import 'package:domestic_violence/home-views/emergency.dart';
+import 'package:domestic_violence/home-views/add_notes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -69,6 +70,7 @@ class MyApp extends StatelessWidget {
         '/posts':(BuildContext context) => Posts(),
         '/evidence':(BuildContext context) => Evidence(),
         '/ngo':(BuildContext context) => NGO(),
+        '/addnotes':(BuildContext context)=>AddNotes(),
         '/education':(BuildContext context) => Videos(),
         '/emergency':(BuildContext context) => Emergency(),
       },

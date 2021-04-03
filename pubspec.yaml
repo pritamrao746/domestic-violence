@@ -24,6 +24,10 @@ dependencies:
   flutter:
     sdk: flutter
 
+  zefyr: ^0.12.0
+
+  quill_delta: ^1.0.1
+
   firebase_core: ^0.7.0
   firebase_auth:
   cloud_firestore:
