@@ -8,7 +8,7 @@ class MyEncrypt {
   static final myEncrypter = encrypt.Encrypter(encrypt.AES(myKey));
 }
 
-Future<void> userSetup(name, pass, mob, nick) async {
+Future<void> userSetup(name, pass, mob, nick, cont1, cont2) async {
   CollectionReference users = FirebaseFirestore.instance.collection("users");
   FirebaseAuth auth = FirebaseAuth.instance;
   String uid = auth.currentUser.uid;
@@ -26,7 +26,9 @@ Future<void> userSetup(name, pass, mob, nick) async {
     'email': email,
     'nickname': nick,
     'mobile': mob,
-    'password': pass
+    'password': pass,
+    'contact1' : cont1,
+    'contact2' :cont2
   });
 
   print("Name=${MyEncrypt.myEncrypter.decrypt16(name, iv: MyEncrypt.myIv)}");

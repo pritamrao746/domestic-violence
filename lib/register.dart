@@ -80,7 +80,7 @@ class _Register_ScreenState extends State<Register_Screen> {
                     await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
                     User user = FirebaseAuth.instance.currentUser;
                     user.updateProfile(displayName: name);
-                    userSetup(name, password, mobile, nickname,);
+                    userSetup(name, password, mobile, nickname,cont1,cont2 );
 
                     Navigator.popUntil(context, ModalRoute.withName('/'));
                     Navigator.pop(context);
