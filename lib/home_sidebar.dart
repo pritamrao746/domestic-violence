@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:domestic_violence/home.dart';
 import 'package:domestic_violence/Settings.dart';
 import 'package:domestic_violence/Logout.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Home_Screen extends StatefulWidget {
   @override
@@ -120,7 +121,14 @@ class MyDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.exit_to_app),
             title: Text('LogOut'),
-            onTap: () => onTap(context, 2),
+            onTap: () {
+              Future<void> _signOut() async {
+                await FirebaseAuth.instance.signOut();
+              }
+              Navigator.popUntil(context, ModalRoute.withName('/'));
+              Navigator.pushNamed(context, '/login');
+              onTap(context, 2);
+              },
           ),
         ],
       )),

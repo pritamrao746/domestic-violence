@@ -1,10 +1,12 @@
 import 'dart:io';
-
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 // For encryption decryption purpose
 import 'dart:typed_data' show Uint8List;
@@ -33,7 +35,6 @@ class _FeatureButtonsViewState extends State<FeatureButtonsView> {
 
   FlutterAudioRecorder _audioRecorder;
 
-
   @override
   void initState() {
     super.initState();
@@ -49,40 +50,38 @@ class _FeatureButtonsViewState extends State<FeatureButtonsView> {
     return Center(
       child: _isRecorded
           ? _isUploading
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: LinearProgressIndicator()),
-                    Text('Uploading to Firebase'),
-                  ],
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.replay),
-                      onPressed: _onRecordAgainButtonPressed,
-                    ),
-                    IconButton(
-                      icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
-                      onPressed: _onPlayButtonPressed,
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.upload_file),
-                      onPressed: _onFileUploadButtonPressed,
-                    ),
-                  ],
-                )
+          ? Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: LinearProgressIndicator()),
+          Text('Uploading to Firebase'),
+        ],
+      )
+          : Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          IconButton(
+            icon: Icon(Icons.replay),
+            onPressed: _onRecordAgainButtonPressed,
+          ),
+          IconButton(
+            icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
+            onPressed: _onPlayButtonPressed,
+          ),
+          IconButton(
+            icon: Icon(Icons.upload_file),
+            onPressed: _onFileUploadButtonPressed,
+          ),
+        ],
+      )
           : IconButton(
-              icon: _isRecording
-                  ? Icon(Icons.pause)
-                  : Icon(Icons.add_box),
-              onPressed: _onRecordButtonPressed,
-            ),
+        icon: _isRecording ? Icon(Icons.pause) : Icon(Icons.add_box),
+        onPressed: _onRecordButtonPressed,
+      ),
     );
   }
 
@@ -98,8 +97,20 @@ class _FeatureButtonsViewState extends State<FeatureButtonsView> {
       // getting encrypted data
       Uint8List encryptedData = encryptAudio(_filePath);
 
-      await ref.putData(encryptedData);
-      widget.onUploadComplete(); // This is the function which we passed from the main aap
+      firebase_storage.UploadTask task = ref.putData(encryptedData);
+
+      // Uploading Audio Data to Firestore
+      try {
+        await task;
+        String downloadUrl = await ref.getDownloadURL();
+        String time = DateTime.now().toString();
+        await uploadOnFirestore(downloadUrl, time);
+      } catch (e) {
+        print("Some Error occurred e=$e");
+      }
+
+      widget
+          .onUploadComplete(); // This is the function which we passed from the main aap
     } catch (error) {
       print('Error occurred while uploading to Firebase ${error.toString()}');
       Scaffold.of(context).showSnackBar(
@@ -153,12 +164,15 @@ class _FeatureButtonsViewState extends State<FeatureButtonsView> {
 
   Future<void> _startRecording() async {
     final bool hasRecordingPermission =
-        await FlutterAudioRecorder.hasPermissions;
+    await FlutterAudioRecorder.hasPermissions;
     if (hasRecordingPermission) {
       Directory directory = await getApplicationDocumentsDirectory();
       String filepath = directory.path +
           '/' +
-          DateTime.now().millisecondsSinceEpoch.toString() +
+          DateTime
+              .now()
+              .millisecondsSinceEpoch
+              .toString() +
           '.aac';
       _audioRecorder =
           FlutterAudioRecorder(filepath, audioFormat: AudioFormat.AAC);
@@ -178,10 +192,22 @@ class _FeatureButtonsViewState extends State<FeatureButtonsView> {
   Uint8List encryptAudio(String filepath) {
     File file = File(filepath);
     Uint8List data = file.readAsBytesSync();
-    Uint8List  encryptedData = MyEncrypt.myEncrypter.encryptBytes(data, iv: MyEncrypt.myIv).bytes;
+    Uint8List encryptedData =
+        MyEncrypt.myEncrypter
+            .encryptBytes(data, iv: MyEncrypt.myIv)
+            .bytes;
     print("ENCRYPTED DATA = $encryptedData");
     return encryptedData;
   }
 
-
+  uploadOnFirestore(String downloadUrl, String time) {
+    String uid = FirebaseAuth.instance.currentUser.uid;
+    var audioRef = FirebaseFirestore.instance.collection('audio');
+    audioRef.doc(time).set(
+        {
+          'uid': uid,
+          'url': downloadUrl,
+          'time': time,
+        });
+  }
 }

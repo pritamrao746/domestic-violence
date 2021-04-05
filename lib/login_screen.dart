@@ -10,14 +10,12 @@ class Login_Screen extends StatefulWidget {
 }
 
 class _Login_ScreenState extends State<Login_Screen> {
-
-  final Color primaryColor=Color(0xff18203d);
+  final Color primaryColor = Color(0xff18203d);
   final Color secondaryColor = Color(0xff232c51);
-  final Color logoGreen=Color(0xff25bcbb);
+  final Color logoGreen = Color(0xff25bcbb);
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-
 
   @override
   Widget build(BuildContext context) {
@@ -38,21 +36,18 @@ class _Login_ScreenState extends State<Login_Screen> {
               Text(
                 'Sign in!',
                 textAlign: TextAlign.center,
-                style:
-                GoogleFonts.openSans(color: Colors.white, fontSize: 28),
+                style: GoogleFonts.openSans(color: Colors.white, fontSize: 28),
               ),
               SizedBox(height: 20),
               Text(
                 'Enter your email and password below to continue...',
                 textAlign: TextAlign.center,
-                style:
-                GoogleFonts.openSans(color: Colors.white, fontSize: 14),
+                style: GoogleFonts.openSans(color: Colors.white, fontSize: 14),
               ),
               SizedBox(
                 height: 50,
               ),
-              _buildTextField(
-                  emailController, Icons.account_circle, 'Email'),
+              _buildTextField(emailController, Icons.account_circle, 'Email'),
               SizedBox(height: 20),
               _buildPasswordField(passwordController, Icons.lock, 'Password'),
               SizedBox(height: 30),
@@ -64,22 +59,29 @@ class _Login_ScreenState extends State<Login_Screen> {
                   String email = emailController.text;
                   String password = passwordController.text;
 
-                  await FirebaseAuth.instance.signInWithEmailAndPassword(
-                      email: email,
-                      password: password).then((user) {
+                  await FirebaseAuth.instance
+                      .signInWithEmailAndPassword(
+                          email: email, password: password)
+                      .then((user) async {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (_) => Home_Screen()));
-                  }).catchError((e){
+                  }).catchError((e) {
                     if (e.code == 'user-not-found') {
                       print('No user found for that email.');
                     } else if (e.code == 'wrong-password') {
                       print('Wrong password provided for that user.');
-                    }
-                    else{
+                    } else {
                       print("Error is $e");
                     }
                   });
 
+                  if (FirebaseAuth.instance.currentUser != null) {
+                    await FirebaseAuth.instance
+                        .setPersistence(Persistence.LOCAL)
+                        .catchError((e) {
+                      print("\n\n\nPersistence Failed\n\n\n");
+                    });
+                  }
                 },
                 color: logoGreen,
                 child: Text('Login',
@@ -119,12 +121,10 @@ class _Login_ScreenState extends State<Login_Screen> {
     );
   }
 
-
   _buildFooterLogo() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-
         Text('Minor Project 2',
             textAlign: TextAlign.center,
             style: GoogleFonts.openSans(

@@ -22,6 +22,7 @@ class _CalendarState extends State<Calendar> {
   CalendarController _controller;
   TextStyle dayStyle(FontWeight fontWeight)
   {
+
     return TextStyle(color:Color(0xff30384c),fontWeight:fontWeight);
   }
 

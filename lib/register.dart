@@ -1,5 +1,4 @@
 import 'package:domestic_violence/login_screen.dart';
-import 'package:domestic_violence/services/UserManagement.dart';
 import 'package:domestic_violence/services/UserSetup.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';

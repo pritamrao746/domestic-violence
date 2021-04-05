@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -10,6 +11,7 @@ import 'dart:typed_data' show Uint8List;
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:domestic_violence/MyEncrpytClass.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 // Widget to capture and crop the image
 class NewPosts extends StatefulWidget {
@@ -24,6 +26,7 @@ class _NewPostsState extends State<NewPosts> {
   final picker = ImagePicker();
   String _downloadUrl;
   var decr;
+
   bool isDecrypted = false;
   final TextEditingController captionController = TextEditingController();
   final Color primaryColor = Color(0xff18203d);
@@ -33,8 +36,11 @@ class _NewPostsState extends State<NewPosts> {
   Future<void> getImage(ImageSource source) async {
     final pickedFile = await picker.getImage(source: source);
 
+    // IMAGE AND TEXT TIME CODE IT
+
     setState(() {
       if (pickedFile != null) {
+        print("USER EMAIL IS ${FirebaseAuth.instance.currentUser.email}");
         _image = File(pickedFile.path);
         _picked = File(pickedFile.path);
         print("Image Picked Path : $_image");
@@ -72,15 +78,12 @@ class _NewPostsState extends State<NewPosts> {
         _image.path, _picked.path,
         quality: 25);
     print("OG LENGTH ${_image.lengthSync()}");
-
-    setState(() {
-      if (result == null) {
-        print("No compression done");
-      } else {
-        _image = result;
-        print("COMP LENGTH ${result.lengthSync()}");
-      }
-    });
+    if (result == null) {
+      print("No compression done");
+    } else {
+      _image = result;
+      print("COMP LENGTH ${result.lengthSync()}");
+    }
   }
 
   Future<void> uploadImageToCloud(String filePath) async {
@@ -120,6 +123,10 @@ class _NewPostsState extends State<NewPosts> {
       downloadUrl = await ref.getDownloadURL();
       print("DATA = $encryptedData");
 
+      // Uploading link on firestore
+      String time = DateTime.now().toString();
+      await uploadOnFirestore(downloadUrl, time);
+
       // Decryption trying
 
       if (await canLaunch(downloadUrl)) {
@@ -129,7 +136,7 @@ class _NewPostsState extends State<NewPosts> {
         print("RESP = ${resp.bodyBytes}");
 
         List<int> decryptedData =
-        MyEncrypt.myEncrypter.decryptBytes(encc, iv: MyEncrypt.myIv);
+            MyEncrypt.myEncrypter.decryptBytes(encc, iv: MyEncrypt.myIv);
         Uint8List d = Uint8List.fromList(decryptedData);
         decr = d;
         isDecrypted = true;
@@ -142,16 +149,12 @@ class _NewPostsState extends State<NewPosts> {
       print("Some Error occurred e=$e");
     }
 
-    setState(() {
-      _downloadUrl = downloadUrl ?? _downloadUrl;
-      print("Download Url is $_downloadUrl");
-    });
   }
 
   _buildTextField(
       TextEditingController controller, IconData icon, String labelText) {
     return Container(
-      margin:EdgeInsets.all(20),
+      margin: EdgeInsets.all(20),
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
           color: secondaryColor, border: Border.all(color: Colors.blue)),
@@ -206,25 +209,33 @@ class _NewPostsState extends State<NewPosts> {
               ],
             ),
             FlatButton.icon(
-              label: Text('Compress Image'),
-              icon: Icon(Icons.compress),
-              onPressed: () => getCompressedImage(),
-            ),
-            FlatButton.icon(
               label: Text('Upload'),
               icon: Icon(Icons.cloud_upload),
               onPressed: () {
+                getCompressedImage();
                 uploadImageToCloud(_image.path);
+                Navigator.pushNamed(context, '/posts');
               },
-
             ),
-
             SizedBox(height: 10),
             _buildTextField(captionController, Icons.account_circle, 'Caption'),
-            if (isDecrypted) ...[Image.memory(decr)]
+            //if (isDecrypted) ...[Image.memory(decr)]
           ]
         ],
       ),
     );
+  }
+
+  uploadOnFirestore(String downloadUrl, String time) {
+    String uid = FirebaseAuth.instance.currentUser.uid;
+    var imgRef = FirebaseFirestore.instance.collection('image');
+
+    imgRef.doc(time).set(
+        {
+          'uid':uid,
+          'url': downloadUrl,
+          'time': time,
+          'caption':captionController.text
+        });
   }
 }

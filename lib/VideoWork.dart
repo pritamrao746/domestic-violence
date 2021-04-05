@@ -1,17 +1,11 @@
 import 'dart:io';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_core/firebase_core.dart' as firebase_core;
-
-// For encryption decryption purpose
-import 'package:encrypt/encrypt.dart' as enc;
-import 'package:url_launcher/url_launcher.dart';
-import 'package:http/http.dart' as http;
-import 'dart:typed_data' show Uint8List;
-import 'package:domestic_violence/MyEncrpytClass.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPage extends StatefulWidget {
@@ -26,11 +20,9 @@ class VideoPage extends StatefulWidget {
 class _VideoPageState extends State<VideoPage> {
   String _counter = null;
   String _downloadUrl;
-  var decr;
-  bool isDecrypted = false;
-  final Color primaryColor=Color(0xff18203d);
+  final Color primaryColor = Color(0xff18203d);
   final Color secondaryColor = Color(0xff232c51);
-  final Color logoGreen=Color(0xff25bcbb);
+  final Color logoGreen = Color(0xff25bcbb);
 
   Future<void> uploadVideo(String filePath) async {
     print("Compressed Path is $filePath");
@@ -38,14 +30,9 @@ class _VideoPageState extends State<VideoPage> {
     var downloadUrl;
     var ref = firebase_storage.FirebaseStorage.instance
         .ref()
-        .child("videos/${DateTime.now()}.text");
+        .child("videos/${DateTime.now()}.mp4");
 
-    // Reading and encrypting the data
-    Uint8List fileData = largeFile.readAsBytesSync();
-    Uint8List fileEncryptedData =
-        MyEncrypt.myEncrypter.encryptBytes(fileData, iv: MyEncrypt.myIv).bytes;
-
-    firebase_storage.UploadTask task = ref.putData(fileEncryptedData);
+    firebase_storage.UploadTask task = ref.putFile(largeFile);
 
     task.snapshotEvents.listen((firebase_storage.TaskSnapshot snapshot) {
       print('Task state: ${snapshot.state}');
@@ -63,43 +50,19 @@ class _VideoPageState extends State<VideoPage> {
       await task;
       downloadUrl = await ref.getDownloadURL();
       _downloadUrl = downloadUrl;
-      print('Upload complete. and DownloadUrl is $downloadUrl');
 
-      print("Encrypted = $fileEncryptedData");
-
-      // Decrypting Data
-      if (await canLaunch(downloadUrl)) {
-        print("Data downloading....");
-        var resp = await http.get(downloadUrl);
-        enc.Encrypted encc = enc.Encrypted(resp.bodyBytes);
-        print("RESP = ${resp.bodyBytes}");
-
-        List<int> decryptedData =
-            MyEncrypt.myEncrypter.decryptBytes(encc, iv: MyEncrypt.myIv);
-        Uint8List d = Uint8List.fromList(decryptedData);
-        decr = d;
-        isDecrypted = true;
-
-        print("DECRYPTED = ${decryptedData}");
-      } else {
-        print("Can't launch URL.");
-      }
+      String time = DateTime.now().toString();
+      await uploadOnFirestore(downloadUrl, time);
     } on firebase_core.FirebaseException catch (e) {
       if (e.code == 'permission-denied') {
         print('User does not have permission to upload to this reference.');
       }
     }
-
-    setState(() {
-      _downloadUrl = downloadUrl ?? _downloadUrl;
-      print('SetState DownloadUrl is $downloadUrl');
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: ListView(
         children: <Widget>[
           if (_counter != null) ...[
@@ -108,10 +71,12 @@ class _VideoPageState extends State<VideoPage> {
               icon: Icon(Icons.cloud_upload),
               onPressed: () {
                 uploadVideo(_counter);
+                setState(() {
+                  _counter = null;
+                });
               },
             )
           ],
-          if (isDecrypted) ...[]
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -140,5 +105,16 @@ class _VideoPageState extends State<VideoPage> {
         child: Icon(Icons.add),
       ),
     );
+  }
+
+  uploadOnFirestore(downloadUrl, String time) {
+    String uid = FirebaseAuth.instance.currentUser.uid;
+    var videoRef = FirebaseFirestore.instance.collection('video');
+
+    videoRef.doc(time).set({
+      'uid': uid,
+      'url': downloadUrl,
+      'time': time,
+    });
   }
 }
