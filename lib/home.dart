@@ -68,6 +68,7 @@ class _HomeState extends State<Home> {
             Center(
               child: InkWell(
                 onTap: () {
+
                   Navigator.pushNamed(context,'/evidence');
                 },
                 child: Container(

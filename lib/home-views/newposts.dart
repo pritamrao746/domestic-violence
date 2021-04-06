@@ -222,7 +222,8 @@ class _NewPostsState extends State<NewPosts> {
               onPressed: () {
                 getCompressedImage();
                 uploadImageToCloud(_image.path);
-//                Navigator.pushNamed(context, '/posts');
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/posts');
               },
             ),
             SizedBox(height: 10),
@@ -245,5 +246,8 @@ class _NewPostsState extends State<NewPosts> {
           'time': time,
           'caption':captionController.text
         });
+
+
+
   }
 }

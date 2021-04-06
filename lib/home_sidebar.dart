@@ -1,8 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:domestic_violence/home.dart';
 import 'package:domestic_violence/Settings.dart';
 import 'package:domestic_violence/Logout.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:domestic_violence/classes/language.dart';
 import 'package:domestic_violence/localization/language_constants.dart';
 import 'package:domestic_violence/main.dart';
@@ -88,6 +88,9 @@ class MyDrawer extends StatelessWidget {
   final Color primaryColor = Color(0xff18203d);
   final Color secondaryColor = Color(0xff232c51);
   final Color logoGreen = Color(0xff25bcbb);
+  String username=FirebaseAuth.instance.currentUser.displayName;
+  String useremail=FirebaseAuth.instance.currentUser.email;
+
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +123,7 @@ class MyDrawer extends StatelessWidget {
                     ),
                     Center(
                       child: Text(
-                        'Name',
+                        username,
                         style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
@@ -132,7 +135,7 @@ class MyDrawer extends StatelessWidget {
                     ),
                     Center(
                       child: Text(
-                        'email.com',
+                        useremail,
                         style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ),

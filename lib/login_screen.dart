@@ -115,14 +115,6 @@ class _Login_ScreenState extends State<Login_Screen> {
                       print("Error is $e");
                     }
                   });
-
-                  if (FirebaseAuth.instance.currentUser != null) {
-                    await FirebaseAuth.instance
-                        .setPersistence(Persistence.LOCAL)
-                        .catchError((e) {
-                      print("\n\n\nPersistence Failed\n\n\n");
-                    });
-                  }
                 },
                 color: logoGreen,
                 child: Text(getTranslated(context, 'login'),

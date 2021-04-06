@@ -20,15 +20,8 @@ import 'package:domestic_violence/localization/demo_localization.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'localization/language_constants.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // SharedPreferences prefs = await SharedPreferences.getInstance();
-  // var email = prefs.get('email');
-
   await Firebase.initializeApp();
   runApp(App());
 }

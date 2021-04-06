@@ -1,3 +1,8 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:quill_delta/quill_delta.dart';
 import 'package:zefyr/zefyr.dart';
@@ -14,6 +19,7 @@ class _AddNotesState extends State<AddNotes> {
   final Color primaryColor=Color(0xff18203d);
   final Color secondaryColor = Color(0xff232c51);
   final Color logoGreen=Color(0xff25bcbb);
+  final CollectionReference notesRef = FirebaseFirestore.instance.collection('notes');
 
   ZefyrController _controller;
   FocusNode _focusNode;
@@ -72,6 +78,14 @@ class _AddNotesState extends State<AddNotes> {
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: primaryColor,
+        onPressed: ()  {
+          save();
+        },
+        tooltip: 'Save',
+        child: Icon(Icons.save),
+      ),
     );
   }
 
@@ -86,4 +100,37 @@ class _AddNotesState extends State<AddNotes> {
     final Delta delta=Delta()..insert("Insert text here\n");
     return NotusDocument.fromDelta(delta);
   }
+
+  void save()
+  {
+    final content = jsonEncode(_controller.document);
+
+    // Removing the extra string added by json
+    String contentStr = content.toString();
+    int length = contentStr.length;
+    String body = contentStr.substring(12,length-5);
+
+    // Storing in firebase
+    try{
+      String time = DateTime.now().toString();
+      notesRef.doc(time).set({
+        'uid':FirebaseAuth.instance.currentUser.uid.toString(),
+        'time':time,
+        'body':body
+      });
+    }
+    catch(e)
+    {
+      print("Some error occurred i.e e=${e.toString()}");
+    }
+    finally{
+      Navigator.pop(context);
+    }
+  }
+
+
+
+
 }
+
+
