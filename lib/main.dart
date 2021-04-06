@@ -16,6 +16,10 @@ import 'package:domestic_violence/home-views/videos.dart';
 import 'package:domestic_violence/home-views/emergency.dart';
 import 'package:domestic_violence/home-views/add_notes.dart';
 import 'package:domestic_violence/home-views/display_video.dart';
+import 'package:domestic_violence/localization/demo_localization.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'localization/language_constants.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -59,30 +63,87 @@ class App extends StatelessWidget {
   }
 }
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Domestic Violence fight',
-      routes: {
-        '/video': (BuildContext context) => VideoPage(title: "Video Upload"),
-        '/displayVideo':(BuildContext context) => VideoDemo(),
-        '/image': (BuildContext context) => ImageCapture(),
-        '/audio': (BuildContext context) => AudioHomeView(),
-        '/': (BuildContext context) => HomePage(),
-        '/register': (BuildContext context) => Register_Screen(),
-        '/login': (BuildContext context) => Login_Screen(),
-        '/home': (BuildContext context) => Home_Screen(),
-        '/posts':(BuildContext context) => Posts(),
-        '/evidence':(BuildContext context) => Evidence(),
-        '/ngo':(BuildContext context) => NGO(),
-        '/addnotes':(BuildContext context)=>AddNotes(),
-        '/education':(BuildContext context) => Videos(),
-        '/emergency':(BuildContext context) => Emergency(),
-      },
-    );
+class MyApp extends StatefulWidget {
+  const MyApp({Key key}) : super(key: key);
+  static void setLocale(BuildContext context, Locale newLocale) {
+    _MyAppState state = context.findAncestorStateOfType<_MyAppState>();
+    state.setLocale(newLocale);
   }
+
+  @override
+  _MyAppState createState() => _MyAppState();
 }
+
+  class _MyAppState extends State<MyApp> {
+    Locale _locale;
+    setLocale(Locale locale) {
+      setState(() {
+        _locale = locale;
+      });
+    }
+    @override
+    void didChangeDependencies() {
+      getLocale().then((locale) {
+        setState(() {
+          this._locale = locale;
+        });
+      });
+      super.didChangeDependencies();
+    }
+
+    @override
+    Widget build(BuildContext context) {
+      if (this._locale == null) {
+        return Container(
+          child: Center(
+            child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue[800])),
+          ),
+        );
+      } else {
+        return MaterialApp(
+          locale: _locale,
+          supportedLocales: [
+            Locale("en", "US"),
+            Locale("hi", "IN")
+          ],
+          localizationsDelegates: [
+            DemoLocalization.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          localeResolutionCallback: (locale, supportedLocales) {
+            for (var supportedLocale in supportedLocales) {
+              if (supportedLocale.languageCode == locale.languageCode &&
+                  supportedLocale.countryCode == locale.countryCode) {
+                return supportedLocale;
+              }
+            }
+            return supportedLocales.first;
+          },
+          title: 'Domestic Violence fight',
+          routes: {
+            '/video': (BuildContext context) => VideoPage(title: "Video Upload"),
+            '/displayVideo':(BuildContext context) => VideoDemo(),
+            '/image': (BuildContext context) => ImageCapture(),
+            '/audio': (BuildContext context) => AudioHomeView(),
+            '/': (BuildContext context) => HomePage(),
+            '/register': (BuildContext context) => Register_Screen(),
+            '/login': (BuildContext context) => Login_Screen(),
+            '/home': (BuildContext context) => Home_Screen(),
+            '/posts':(BuildContext context) => Posts(),
+            '/evidence':(BuildContext context) => Evidence(),
+            '/ngo':(BuildContext context) => NGO(),
+            '/addnotes':(BuildContext context)=>AddNotes(),
+            '/education':(BuildContext context) => Videos(),
+            '/emergency':(BuildContext context) => Emergency(),
+          },
+
+        );
+      }
+    }
+  }
 
 class HomePage extends StatelessWidget {
   final Color primaryColor = Color(0xff18203d);

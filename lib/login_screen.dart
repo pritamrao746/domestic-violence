@@ -3,6 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:domestic_violence/register.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:domestic_violence/home_sidebar.dart';
+import 'package:domestic_violence/classes/language.dart';
+import 'package:domestic_violence/localization/language_constants.dart';
+import 'package:domestic_violence/main.dart';
 
 class Login_Screen extends StatefulWidget {
   @override
@@ -14,6 +17,11 @@ class _Login_ScreenState extends State<Login_Screen> {
   final Color secondaryColor = Color(0xff232c51);
   final Color logoGreen = Color(0xff25bcbb);
 
+  void _changeLanguage(Language language) async {
+    Locale _locale = await setLocale(language.languageCode);
+    MyApp.setLocale(context, _locale);
+  }
+
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
@@ -24,7 +32,40 @@ class _Login_ScreenState extends State<Login_Screen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        actions: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DropdownButton<Language>(
+              underline: SizedBox(),
+              icon: Icon(
+                Icons.language,
+                color: Colors.white,
+              ),
+              onChanged: (Language language) {
+                _changeLanguage(language);
+              },
+              items: Language.languageList()
+                  .map<DropdownMenuItem<Language>>(
+                    (e) => DropdownMenuItem<Language>(
+                  value: e,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Text(
+                        e.flag,
+                        style: TextStyle(fontSize: 30),
+                      ),
+                      Text(e.name)
+                    ],
+                  ),
+                ),
+              )
+                  .toList(),
+            ),
+          ),
+        ],
       ),
+
       body: Container(
         alignment: Alignment.topCenter,
         margin: EdgeInsets.symmetric(horizontal: 30),
@@ -34,7 +75,7 @@ class _Login_ScreenState extends State<Login_Screen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Text(
-                'Sign in!',
+                getTranslated(context, 'home_page'),
                 textAlign: TextAlign.center,
                 style: GoogleFonts.openSans(color: Colors.white, fontSize: 28),
               ),
