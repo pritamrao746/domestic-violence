@@ -6,6 +6,9 @@ import 'package:domestic_violence/home-views/ngo_details.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:domestic_violence/classes/language.dart';
+import 'package:domestic_violence/localization/language_constants.dart';
+import 'package:domestic_violence/main.dart';
 
 class NGO extends StatefulWidget {
   @override
@@ -114,14 +117,51 @@ class _NGOState extends State<NGO> {
   final Color secondaryColor = Color(0xff232c51);
   final Color logoGreen = Color(0xff25bcbb);
 
+  void _changeLanguage(Language language) async {
+    Locale _locale = await setLocale(language.languageCode);
+    MyApp.setLocale(context, _locale);
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size size=MediaQuery.of(context).size;
     final double categoryHeight = size.height*0.40;
     return Scaffold(
         appBar:AppBar(
-          title:Text('NGO details'),
+          title:Text(getTranslated(context, 'ngo-details')),
           backgroundColor: primaryColor,
+          actions: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: DropdownButton<Language>(
+                underline: SizedBox(),
+                icon: Icon(
+                  Icons.language,
+                  color: Colors.white,
+                ),
+                onChanged: (Language language) {
+                  _changeLanguage(language);
+                },
+                items: Language.languageList()
+                    .map<DropdownMenuItem<Language>>(
+                      (e) => DropdownMenuItem<Language>(
+                    value: e,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Text(
+                          e.flag,
+                          style: TextStyle(fontSize: 30),
+                        ),
+                        Text(e.name)
+                      ],
+                    ),
+                  ),
+                )
+                    .toList(),
+              ),
+            ),
+          ],
         ),
         body:Container(
           height:size.height,

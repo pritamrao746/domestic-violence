@@ -3,6 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:domestic_violence/classes/language.dart';
+import 'package:domestic_violence/localization/language_constants.dart';
+import 'package:domestic_violence/main.dart';
 
 class Videos extends StatefulWidget {
   @override
@@ -13,6 +16,12 @@ class _VideosState extends State<Videos> {
   final Color primaryColor=Color(0xff18203d);
   final Color secondaryColor = Color(0xff232c51);
   final Color logoGreen=Color(0xff25bcbb);
+
+  void _changeLanguage(Language language) async {
+    Locale _locale = await setLocale(language.languageCode);
+    MyApp.setLocale(context, _locale);
+  }
+
 
   DocumentReference linkRef;
   List<String> videoID = [];
@@ -48,8 +57,40 @@ class _VideosState extends State<Videos> {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text('Educational Videos'),
+            title: Text(getTranslated(context, 'edu_videos')),
             backgroundColor: primaryColor,
+            actions: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: DropdownButton<Language>(
+                  underline: SizedBox(),
+                  icon: Icon(
+                    Icons.language,
+                    color: Colors.white,
+                  ),
+                  onChanged: (Language language) {
+                    _changeLanguage(language);
+                  },
+                  items: Language.languageList()
+                      .map<DropdownMenuItem<Language>>(
+                        (e) => DropdownMenuItem<Language>(
+                      value: e,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          Text(
+                            e.flag,
+                            style: TextStyle(fontSize: 30),
+                          ),
+                          Text(e.name)
+                        ],
+                      ),
+                    ),
+                  )
+                      .toList(),
+                ),
+              ),
+            ],
 
           ),
 

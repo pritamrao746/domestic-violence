@@ -75,22 +75,22 @@ class _Login_ScreenState extends State<Login_Screen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Text(
-                getTranslated(context, 'home_page'),
+                getTranslated(context, 'login'),
                 textAlign: TextAlign.center,
                 style: GoogleFonts.openSans(color: Colors.white, fontSize: 28),
               ),
               SizedBox(height: 20),
               Text(
-                'Enter your email and password below to continue...',
+                getTranslated(context, 'login_instr'),
                 textAlign: TextAlign.center,
                 style: GoogleFonts.openSans(color: Colors.white, fontSize: 14),
               ),
               SizedBox(
                 height: 50,
               ),
-              _buildTextField(emailController, Icons.account_circle, 'Email'),
+              _buildTextField(emailController, Icons.account_circle, getTranslated(context, 'email')),
               SizedBox(height: 20),
-              _buildPasswordField(passwordController, Icons.lock, 'Password'),
+              _buildPasswordField(passwordController, Icons.lock, getTranslated(context, 'password')),
               SizedBox(height: 30),
               MaterialButton(
                 elevation: 0,
@@ -125,7 +125,7 @@ class _Login_ScreenState extends State<Login_Screen> {
                   }
                 },
                 color: logoGreen,
-                child: Text('Login',
+                child: Text(getTranslated(context, 'login'),
                     style: TextStyle(color: Colors.white, fontSize: 16)),
                 textColor: Colors.white,
               ),
@@ -144,7 +144,7 @@ class _Login_ScreenState extends State<Login_Screen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     SizedBox(width: 10),
-                    Text('Register',
+                    Text(getTranslated(context, 'sign_up'),
                         style: TextStyle(color: Colors.white, fontSize: 16)),
                   ],
                 ),

@@ -3,6 +3,9 @@ import 'package:domestic_violence/home.dart';
 import 'package:domestic_violence/Settings.dart';
 import 'package:domestic_violence/Logout.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:domestic_violence/classes/language.dart';
+import 'package:domestic_violence/localization/language_constants.dart';
+import 'package:domestic_violence/main.dart';
 
 class Home_Screen extends StatefulWidget {
   @override
@@ -14,6 +17,12 @@ class _Home_ScreenState extends State<Home_Screen> {
   final Color primaryColor = Color(0xff18203d);
   final Color secondaryColor = Color(0xff232c51);
   final Color logoGreen = Color(0xff25bcbb);
+
+  void _changeLanguage(Language language) async {
+    Locale _locale = await setLocale(language.languageCode);
+    MyApp.setLocale(context, _locale);
+  }
+
   List<Widget> list = [
     Home(),
     Settings(),
@@ -24,13 +33,40 @@ class _Home_ScreenState extends State<Home_Screen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text('Home Page'),
+          title: Text(getTranslated(context, 'home_page')),
           backgroundColor: primaryColor,
-          actions: [
-            IconButton(
-                icon: Icon(Icons.g_translate, color: Colors.white),
-                onPressed: null)
-          ]),
+        actions: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DropdownButton<Language>(
+              underline: SizedBox(),
+              icon: Icon(
+                Icons.language,
+                color: Colors.white,
+              ),
+              onChanged: (Language language) {
+                _changeLanguage(language);
+              },
+              items: Language.languageList()
+                  .map<DropdownMenuItem<Language>>(
+                    (e) => DropdownMenuItem<Language>(
+                  value: e,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Text(
+                        e.flag,
+                        style: TextStyle(fontSize: 30),
+                      ),
+                      Text(e.name)
+                    ],
+                  ),
+                ),
+              )
+                  .toList(),
+            ),
+          ),
+        ],),
       body: list[index],
       drawer: MyDrawer(
         onTap: (ctx, i) {
@@ -107,12 +143,12 @@ class MyDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.home),
-            title: Text('Home'),
+            title: Text(getTranslated(context, 'home_page')),
             onTap: () => onTap(context, 0),
           ),
           ListTile(
             leading: Icon(Icons.settings),
-            title: Text('Settings'),
+            title: Text(getTranslated(context, 'settings')),
             onTap: () => onTap(context, 1),
           ),
           Divider(
@@ -120,7 +156,7 @@ class MyDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.exit_to_app),
-            title: Text('LogOut'),
+            title: Text(getTranslated(context, 'logout')),
             onTap: () {
               Future<void> _signOut() async {
                 await FirebaseAuth.instance.signOut();

@@ -12,6 +12,9 @@ import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:domestic_violence/MyEncrpytClass.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:domestic_violence/classes/language.dart';
+import 'package:domestic_violence/localization/language_constants.dart';
+import 'package:domestic_violence/main.dart';
 
 // Widget to capture and crop the image
 class NewPosts extends StatefulWidget {
@@ -26,6 +29,11 @@ class _NewPostsState extends State<NewPosts> {
   final picker = ImagePicker();
   String _downloadUrl;
   var decr;
+
+  void _changeLanguage(Language language) async {
+    Locale _locale = await setLocale(language.languageCode);
+    MyApp.setLocale(context, _locale);
+  }
 
   bool isDecrypted = false;
   final TextEditingController captionController = TextEditingController();
@@ -209,7 +217,7 @@ class _NewPostsState extends State<NewPosts> {
               ],
             ),
             FlatButton.icon(
-              label: Text('Upload'),
+              label: Text(getTranslated(context, 'upload')),
               icon: Icon(Icons.cloud_upload),
               onPressed: () {
                 getCompressedImage();
@@ -218,7 +226,7 @@ class _NewPostsState extends State<NewPosts> {
               },
             ),
             SizedBox(height: 10),
-            _buildTextField(captionController, Icons.account_circle, 'Caption'),
+            _buildTextField(captionController, Icons.account_circle, getTranslated(context, 'caption')),
             //if (isDecrypted) ...[Image.memory(decr)]
           ]
         ],

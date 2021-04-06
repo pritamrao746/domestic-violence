@@ -7,6 +7,10 @@ import 'package:domestic_violence/home-views/all_posts.dart';
 import 'package:domestic_violence/home-views/newposts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:domestic_violence/classes/language.dart';
+import 'package:domestic_violence/localization/language_constants.dart';
+import 'package:domestic_violence/main.dart';
+
 
 
 class Posts extends StatefulWidget {
@@ -19,6 +23,11 @@ class _PostsState extends State<Posts> {
   final Color primaryColor=Color(0xff18203d);
   final Color secondaryColor = Color(0xff232c51);
   final Color logoGreen=Color(0xff25bcbb);
+
+  void _changeLanguage(Language language) async {
+    Locale _locale = await setLocale(language.languageCode);
+    MyApp.setLocale(context, _locale);
+  }
 
   int _currentIndex=0;
 
@@ -176,11 +185,40 @@ class _PostsState extends State<Posts> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title:Text('Posts'),
+          title:Text(getTranslated(context, 'posts')),
           backgroundColor: primaryColor,
-          actions:[
-            IconButton(icon: Icon(Icons.g_translate, color:Colors.white) ,onPressed: null)
-          ]
+        actions: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DropdownButton<Language>(
+              underline: SizedBox(),
+              icon: Icon(
+                Icons.language,
+                color: Colors.white,
+              ),
+              onChanged: (Language language) {
+                _changeLanguage(language);
+              },
+              items: Language.languageList()
+                  .map<DropdownMenuItem<Language>>(
+                    (e) => DropdownMenuItem<Language>(
+                  value: e,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Text(
+                        e.flag,
+                        style: TextStyle(fontSize: 30),
+                      ),
+                      Text(e.name)
+                    ],
+                  ),
+                ),
+              )
+                  .toList(),
+            ),
+          ),
+        ],
       ),
       backgroundColor:Color(0xFFEDF0F6),
       body:_children[_currentIndex],
@@ -193,19 +231,19 @@ class _PostsState extends State<Posts> {
           items:[
             BottomNavigationBarItem(
               icon:Icon(Icons.account_circle,color: Colors.white,),
-              title:Text('Allposts',style:TextStyle(color:Colors.white)),
+              title:Text(getTranslated(context, 'all_posts'),style:TextStyle(color:Colors.white)),
             ),
             BottomNavigationBarItem(
               icon:Icon(Icons.account_circle,color: Colors.white,),
-              title:Text('Myposts',style:TextStyle(color:Colors.white)),
+              title:Text(getTranslated(context, 'my_posts'),style:TextStyle(color:Colors.white)),
             ),
             BottomNavigationBarItem(
               icon:Icon(Icons.favorite_border_outlined,color: Colors.white),
-              title:Text('Saved',style:TextStyle(color:Colors.white)),
+              title:Text(getTranslated(context, 'saved_posts'),style:TextStyle(color:Colors.white)),
             ),
             BottomNavigationBarItem(
               icon:Icon(Icons.add_box_outlined,color: Colors.white),
-              title:Text('New',style:TextStyle(color:Colors.white)),
+              title:Text(getTranslated(context, 'new_posts'),style:TextStyle(color:Colors.white)),
             ),
           ],
         onTap: (index){

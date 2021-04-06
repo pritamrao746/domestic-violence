@@ -6,6 +6,10 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:domestic_violence/classes/language.dart';
+import 'package:domestic_violence/localization/language_constants.dart';
+import 'package:domestic_violence/main.dart';
+
 
 
 class Emergency extends StatefulWidget {
@@ -30,15 +34,50 @@ class _EmergencyState extends State<Emergency> {
   final Color primaryColor=Color(0xff18203d);
   final Color secondaryColor = Color(0xff232c51);
   final Color logoGreen=Color(0xff25bcbb);
+
+  void _changeLanguage(Language language) async {
+    Locale _locale = await setLocale(language.languageCode);
+    MyApp.setLocale(context, _locale);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title:Text('Emergency'),
+          title:Text(getTranslated(context, 'emergency')),
           backgroundColor: primaryColor,
-          actions:[
-            IconButton(icon: Icon(Icons.g_translate, color:Colors.white) ,onPressed: null)
-          ]
+        actions: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DropdownButton<Language>(
+              underline: SizedBox(),
+              icon: Icon(
+                Icons.language,
+                color: Colors.white,
+              ),
+              onChanged: (Language language) {
+                _changeLanguage(language);
+              },
+              items: Language.languageList()
+                  .map<DropdownMenuItem<Language>>(
+                    (e) => DropdownMenuItem<Language>(
+                  value: e,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Text(
+                        e.flag,
+                        style: TextStyle(fontSize: 30),
+                      ),
+                      Text(e.name)
+                    ],
+                  ),
+                ),
+              )
+                  .toList(),
+            ),
+          ),
+        ],
       ),
       body: Center(
         child: Container(
@@ -57,7 +96,7 @@ class _EmergencyState extends State<Emergency> {
 
                 ),
                 child: Text(
-                  'Press',
+                  getTranslated(context, 'press'),
                   style: TextStyle(fontSize: 24),
                 ),
               ),

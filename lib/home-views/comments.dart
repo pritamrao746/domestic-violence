@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:domestic_violence/classes/language.dart';
+import 'package:domestic_violence/localization/language_constants.dart';
+import 'package:domestic_violence/main.dart';
 
 class Comments extends StatefulWidget {
   @override
@@ -12,6 +15,11 @@ class _CommentsState extends State<Comments> {
   final Color primaryColor=Color(0xff18203d);
   final Color secondaryColor = Color(0xff232c51);
   final Color logoGreen=Color(0xff25bcbb);
+
+  void _changeLanguage(Language language) async {
+    Locale _locale = await setLocale(language.languageCode);
+    MyApp.setLocale(context, _locale);
+  }
 
   Widget _buildComment(int index){
     return ListTile(
@@ -53,11 +61,40 @@ class _CommentsState extends State<Comments> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title:Text('Posts'),
+            title:Text(getTranslated(context, 'posts')),
             backgroundColor: primaryColor,
-            actions:[
-              IconButton(icon: Icon(Icons.g_translate, color:Colors.white) ,onPressed: null)
-            ]
+          actions: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: DropdownButton<Language>(
+                underline: SizedBox(),
+                icon: Icon(
+                  Icons.language,
+                  color: Colors.white,
+                ),
+                onChanged: (Language language) {
+                  _changeLanguage(language);
+                },
+                items: Language.languageList()
+                    .map<DropdownMenuItem<Language>>(
+                      (e) => DropdownMenuItem<Language>(
+                    value: e,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Text(
+                          e.flag,
+                          style: TextStyle(fontSize: 30),
+                        ),
+                        Text(e.name)
+                      ],
+                    ),
+                  ),
+                )
+                    .toList(),
+              ),
+            ),
+          ],
         ),
         backgroundColor:Color(0xFFEDF0F6),
         body:SingleChildScrollView(
@@ -245,7 +282,7 @@ class _CommentsState extends State<Comments> {
                       borderRadius: BorderRadius.circular(30),
                       borderSide:BorderSide(color:Colors.grey),
                     ),
-                    hintText:'Add a comment',
+                    hintText:getTranslated(context, 'hint_comment'),
                     prefixIcon:Container(
                       margin:EdgeInsets.all(10),
                       width:50,

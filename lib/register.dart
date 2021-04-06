@@ -38,7 +38,7 @@ class _Register_ScreenState extends State<Register_Screen> {
     return Scaffold(
       backgroundColor: primaryColor,
       appBar: AppBar(
-        title:Text(getTranslated(context, 'home_page')),
+        title:Text(getTranslated(context, 'sign_up')),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: <Widget>[
@@ -84,24 +84,24 @@ class _Register_ScreenState extends State<Register_Screen> {
             children: <Widget>[
 
               SizedBox(height: 10),
-              _buildTextField(nameController, Icons.account_circle, 'Name'),
+              _buildTextField(nameController, Icons.account_circle, getTranslated(context, 'name')),
               SizedBox(height: 10),
               _buildTextField(
-                  nicknameController, Icons.account_circle, 'Nickname'),
+                  nicknameController, Icons.account_circle,getTranslated(context, 'nickname')),
               SizedBox(height: 10),
-              _buildTextField(emailController, Icons.account_circle, 'Email'),
+              _buildTextField(emailController, Icons.account_circle, getTranslated(context, 'email')),
               SizedBox(height: 10),
               _buildTextField(
-                  mobileController, Icons.account_circle, 'Mobile No'),
+                  mobileController, Icons.account_circle, getTranslated(context, 'mobile')),
               SizedBox(height: 10),
-              _buildTextField(emer1Controller, Icons.account_circle, 'Emergency Contact 1'),
+              _buildTextField(emer1Controller, Icons.account_circle, getTranslated(context, 'emer1')),
               SizedBox(height: 10),
-              _buildTextField(emer2Controller, Icons.account_circle, 'Emergency Contact 2'),
+              _buildTextField(emer2Controller, Icons.account_circle, getTranslated(context, 'emer2')),
               SizedBox(height: 10),
-              _buildPasswordField(passwordController, Icons.lock, 'Password'),
+              _buildPasswordField(passwordController, Icons.lock, getTranslated(context, 'password')),
               SizedBox(height: 10),
               _buildPasswordField(
-                  confirmPasswordController, Icons.lock, 'Confirm Password'),
+                  confirmPasswordController, Icons.lock, getTranslated(context, 'conf_password')),
               SizedBox(height: 20),
               MaterialButton(
                 elevation: 0,
@@ -132,7 +132,7 @@ class _Register_ScreenState extends State<Register_Screen> {
 
                 },
                 color: logoGreen,
-                child: Text('Register',
+                child: Text(getTranslated(context, 'sign_up'),
                     style: TextStyle(color: Colors.white, fontSize: 16)),
                 textColor: Colors.white,
               ),
@@ -150,7 +150,7 @@ class _Register_ScreenState extends State<Register_Screen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     SizedBox(width: 10),
-                    Text('Login',
+                    Text(getTranslated(context, 'login'),
                         style: TextStyle(color: Colors.white, fontSize: 16)),
                   ],
                 ),

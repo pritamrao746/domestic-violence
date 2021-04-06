@@ -2,17 +2,34 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:domestic_violence/classes/language.dart';
+import 'package:domestic_violence/localization/language_constants.dart';
+import 'package:domestic_violence/main.dart';
 
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
   final double _borderRadius=24;
+
   final Color primaryColor=Color(0xff18203d);
+
   final Color secondaryColor = Color(0xff232c51);
+
   final Color logoGreen=Color(0xff25bcbb);
+
+  void _changeLanguage(Language language) async {
+    Locale _locale = await setLocale(language.languageCode);
+    MyApp.setLocale(context, _locale);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children:[
@@ -40,7 +57,7 @@ class Home extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child:Center(child: Text('Posts', style:TextStyle(
+                  child:Center(child: Text(getTranslated(context, 'posts'), style:TextStyle(
                     fontSize: 35,
                     color:Colors.white,
                   ))),
@@ -72,7 +89,7 @@ class Home extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child:Center(child: Text('Evidence', style:TextStyle(
+                  child:Center(child: Text(getTranslated(context, 'evidence'), style:TextStyle(
                     fontSize: 35,
                     color:Colors.white,
                   ))),
@@ -104,7 +121,7 @@ class Home extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child:Center(child: Text("NGO's", style:TextStyle(
+                  child:Center(child: Text(getTranslated(context, 'ngo'), style:TextStyle(
                     fontSize: 35,
                     color:Colors.white,
                   ))),
@@ -136,7 +153,7 @@ class Home extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child:Center(child: Text("Educational Videos", style:TextStyle(
+                  child:Center(child: Text(getTranslated(context, 'edu_videos'), style:TextStyle(
                     fontSize: 35,
                     color:Colors.white,
                   ))),
@@ -168,7 +185,7 @@ class Home extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child:Center(child: Text("Emergency", style:TextStyle(
+                  child:Center(child: Text(getTranslated(context, 'emergency'), style:TextStyle(
                     fontSize: 35,
                     color:Colors.white,
                   ))),

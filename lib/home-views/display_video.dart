@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:domestic_violence/classes/language.dart';
+import 'package:domestic_violence/localization/language_constants.dart';
+import 'package:domestic_violence/main.dart';
 
 class VideoDemo extends StatefulWidget {
   final String url;
@@ -12,6 +15,11 @@ class VideoDemoState extends State<VideoDemo> {
   //
   VideoPlayerController _controller;
   Future<void> _initializeVideoPlayerFuture;
+
+  void _changeLanguage(Language language) async {
+    Locale _locale = await setLocale(language.languageCode);
+    MyApp.setLocale(context, _locale);
+  }
 
   @override
   void initState() {
@@ -37,11 +45,40 @@ class VideoDemoState extends State<VideoDemo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title:Text('Evidence-Video'),
+          title:Text(getTranslated(context, 'evidence-vid')),
           backgroundColor: primaryColor,
-          actions:[
-            IconButton(icon: Icon(Icons.g_translate, color:Colors.white) ,onPressed: null)
-          ]
+        actions: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DropdownButton<Language>(
+              underline: SizedBox(),
+              icon: Icon(
+                Icons.language,
+                color: Colors.white,
+              ),
+              onChanged: (Language language) {
+                _changeLanguage(language);
+              },
+              items: Language.languageList()
+                  .map<DropdownMenuItem<Language>>(
+                    (e) => DropdownMenuItem<Language>(
+                  value: e,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Text(
+                        e.flag,
+                        style: TextStyle(fontSize: 30),
+                      ),
+                      Text(e.name)
+                    ],
+                  ),
+                ),
+              )
+                  .toList(),
+            ),
+          ),
+        ],
       ),
       body: FutureBuilder(
         future: _initializeVideoPlayerFuture,
