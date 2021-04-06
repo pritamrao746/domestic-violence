@@ -222,12 +222,12 @@ class _NewPostsState extends State<NewPosts> {
               onPressed: () {
                 getCompressedImage();
                 uploadImageToCloud(_image.path);
-                Navigator.pushNamed(context, '/posts');
+//                Navigator.pushNamed(context, '/posts');
               },
             ),
             SizedBox(height: 10),
             _buildTextField(captionController, Icons.account_circle, getTranslated(context, 'caption')),
-            //if (isDecrypted) ...[Image.memory(decr)]
+            if (isDecrypted) ...[Image.memory(decr)]
           ]
         ],
       ),

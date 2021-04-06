@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:domestic_violence/home-views/comments.dart';
@@ -9,7 +11,8 @@ class AllPosts extends StatefulWidget {
 
 class _AllPostsState extends State<AllPosts> {
 
-  Widget _buildPost(int index){
+  Widget _buildPost(int index, name, time, link,caption){
+
     return Padding(
       padding:EdgeInsets.symmetric(horizontal: 10.0,vertical:5.0),
       child:Container(
@@ -53,12 +56,12 @@ class _AllPostsState extends State<AllPosts> {
                             ),
                           ),
                           title:Text(
-                            'Mahipal',
+                            name,
                             style:TextStyle(
                               fontWeight:FontWeight.bold,
                             ),
                           ),
-                          subtitle: Text('12:04 15th March'),
+                          subtitle: Text(time),
 
                         ),
                         InkWell(
@@ -80,7 +83,7 @@ class _AllPostsState extends State<AllPosts> {
                                     ),
                                   ],
                                   image:DecorationImage(
-                                    image:AssetImage('assets/post1.jpg'),
+                                    image:AssetImage(link),
                                     fit:BoxFit.fitWidth,
                                   )
                               )
@@ -118,9 +121,15 @@ class _AllPostsState extends State<AllPosts> {
                                           icon:Icon(Icons.chat),
                                           iconSize:30,
                                           onPressed:(){
+//                                            Navigator.pushNamed(context, "Comments",arguments: {"name" :
+//                                            "Bijendra", "rollNo": 65210});
+//                                              },
                                             Navigator.push(context,
-                                                MaterialPageRoute(builder: (_) => Comments()));
-                                          },
+                                                MaterialPageRoute(builder: (_) => Comments(postid:'abcd')));
+
+
+                                            },
+
                                         ),
                                         Text(
                                           '2',
@@ -143,9 +152,11 @@ class _AllPostsState extends State<AllPosts> {
                             ],
                           ),
                         )
+
                       ],
                     )
                 )
+
               ]
           )
       ),
@@ -154,12 +165,42 @@ class _AllPostsState extends State<AllPosts> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    FirebaseAuth auth = FirebaseAuth.instance;
+    String uid = auth.currentUser.uid;
+
+
+    List<Widget> m=[_buildPost(0,'keizer','12:04 15th March','assets/.jpg','caption'),
+          ];
+
+    FirebaseFirestore.
+    instance.
+    collection("image").
+    get().
+    then((value) {
+      value.docs.forEach((result) {
+        print("-----DEBUG-----");
+        String username=result.data()['uid'];
+        String captioin=result.data()['caption'];
+        String time= result.data()['time'];
+        String url=result.data()['url'];
+        print('$username, $captioin, $time, $url');
+        m.add(_buildPost(0,username,time, 'assets/post1.jpg',captioin) );
+      });
+    });
+
+    ListView l=ListView(
       physics:AlwaysScrollableScrollPhysics(),
-      children:[
-        _buildPost(0),
-        _buildPost(1),
-      ],
+      children: m,
     );
+    return l;
+
+//    return ListView(
+//        physics:AlwaysScrollableScrollPhysics(),
+//        children:[
+//          _buildPost(0,'keizer','12:04 15th March','assets/post1.jpg','caption'),
+//          _buildPost(1,'keizer','12:04 15th March','assets/post1.jpg','caption'),
+//        ],
+//    );
+
   }
 }
