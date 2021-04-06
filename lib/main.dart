@@ -15,6 +15,7 @@ import 'package:domestic_violence/home-views/ngo.dart';
 import 'package:domestic_violence/home-views/videos.dart';
 import 'package:domestic_violence/home-views/emergency.dart';
 import 'package:domestic_violence/home-views/add_notes.dart';
+import 'package:domestic_violence/home-views/display_video.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -65,6 +66,7 @@ class MyApp extends StatelessWidget {
       title: 'Domestic Violence fight',
       routes: {
         '/video': (BuildContext context) => VideoPage(title: "Video Upload"),
+        '/displayVideo':(BuildContext context) => VideoDemo(),
         '/image': (BuildContext context) => ImageCapture(),
         '/audio': (BuildContext context) => AudioHomeView(),
         '/': (BuildContext context) => HomePage(),

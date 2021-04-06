@@ -2,6 +2,7 @@ import 'package:domestic_violence/VideoWork.dart';
 import 'package:domestic_violence/audio-work/AudioHomeView.dart';
 import 'package:domestic_violence/home-views/Calendar.dart';
 import 'package:domestic_violence/home-views/notes.dart';
+import 'package:domestic_violence/home-views/video_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -27,7 +28,7 @@ class _Evidence extends State<Evidence> {
   final List<Widget> _children =[
     Calendar(),
     AudioHomeView(),
-    VideoPage(title: "Video Upload"),
+    VideoList(),
     Notes(),
 
   ];

@@ -63,6 +63,13 @@ class _VideoPageState extends State<VideoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+          title:Text('Evidence-New Video'),
+          backgroundColor: primaryColor,
+          actions:[
+            IconButton(icon: Icon(Icons.g_translate, color:Colors.white) ,onPressed: null)
+          ]
+      ),
       body: ListView(
         children: <Widget>[
           if (_counter != null) ...[
