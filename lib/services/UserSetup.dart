@@ -1,12 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
-
-class MyEncrypt {
-  static final myKey = encrypt.Key.fromUtf8("TechWithVPTechWithVPTechWithVP12");
-  static final myIv = encrypt.IV.fromUtf8("VivekPanchal1122");
-  static final myEncrypter = encrypt.Encrypter(encrypt.AES(myKey));
-}
+import 'package:domestic_violence/MyEncrpytClass.dart';
 
 Future<void> userSetup(name, pass, mob, nick, cont1, cont2) async {
   CollectionReference users = FirebaseFirestore.instance.collection("users");
