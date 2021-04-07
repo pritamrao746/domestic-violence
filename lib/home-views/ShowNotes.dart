@@ -101,7 +101,8 @@ class _ShowNotesState extends State<ShowNotes> {
   }
 
   NotusDocument _loadDocument(){
-    final Delta delta=Delta()..insert(widget.notesList[widget.index]['body']);
+    String body = widget.notesList[widget.index]['body'].toString()+"\n";
+    final Delta delta=Delta()..insert(body);
     return NotusDocument.fromDelta(delta);
   }
 

@@ -41,13 +41,21 @@ class _NotesState extends State<Notes> {
                   IconButton(
                     icon: Icon(Icons.open_in_new),
                     onPressed: () {
-                      ShowNotes(notesList:notesList,index:index);
-
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                          builder: (context) => ShowNotes(notesList:notesList,index:index),
+                      ));
                     },
                   ),
                   IconButton(
                     icon: Icon(Icons.delete),
                     onPressed: () {
+
+                      notesList[index]['ref'].delete();
+                      setState(() {
+                        loadData();
+                      });
 
                     },
                   ),
