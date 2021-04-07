@@ -15,7 +15,7 @@ class _VideoListState extends State<VideoList> {
   final Color secondaryColor = Color(0xff232c51);
   final Color logoGreen=Color(0xff25bcbb);
   final List<dynamic> videos = video_url;
-
+  var url_list=[];
 
 
 
@@ -26,32 +26,14 @@ class _VideoListState extends State<VideoList> {
 //    String uid = auth.currentUser.uid;
     String uid='HVaUYC72SvhbsFOpOmC9YmLPk9B2';
 
-    var url_list=[];
-    FirebaseFirestore.
-    instance.
-    collection("video").
-    where("uid", isEqualTo: uid).
-    get().
-    then((value) {
-      value.docs.forEach((result) {
-        var avd = new Map();
-        avd['title'] = result.data()['time'];
-        avd['url'] = result.data()['url'];
-        print(avd);
-        url_list.add(avd);
-      });
-    });
-    print(url_list);
-
-
     return Scaffold(
       body: ListView.builder(
-          itemCount: videos.length,
+          itemCount: url_list.length,
           scrollDirection: Axis.vertical,
           itemBuilder: (BuildContext context,int index){
             return ListTile(
                 leading:Icon(Icons.videocam),
-                title:Text(videos[index]["title"]),
+                title:Text(url_list[index]["time"]),
                 trailing: Wrap(
                 spacing:20,
                 children:[
@@ -60,12 +42,17 @@ class _VideoListState extends State<VideoList> {
                     onPressed: () {
 
                       Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => VideoDemo(url:videos[index]["url"])));
+                          MaterialPageRoute(builder: (_) => VideoDemo(url:url_list[index]["url"])));
                     },
                   ),
                   IconButton(
                     icon: Icon(Icons.delete),
-                    onPressed: () {},
+                    onPressed: () {
+                      url_list[index]['ref'].delete();
+                      setState(() {
+                        loadData();
+                      });
+                    },
                   ),
                 ],
               ),
@@ -80,5 +67,39 @@ class _VideoListState extends State<VideoList> {
         child: Icon(Icons.add),
       ),
     );
+  }
+
+  @override
+  void initState()
+  {
+    loadData();
+  }
+
+
+  Future<void> loadData() async{
+
+    String uid = FirebaseAuth.instance.currentUser.uid.toString();
+    url_list.clear();
+
+    await FirebaseFirestore.
+    instance.
+    collection("video").
+    where("uid", isEqualTo: uid).
+    get().
+    then((value) {
+      value.docs.forEach((result) {
+        var avd = new Map();
+        avd['time'] = result.data()['time'];
+        avd['url'] = result.data()['url'];
+        avd['ref'] = result.reference;
+        print(avd);
+        url_list.add(avd);
+      });
+    });
+    print(url_list);
+
+    setState(() {
+
+    });
   }
 }

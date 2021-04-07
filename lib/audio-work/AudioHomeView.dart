@@ -74,6 +74,7 @@ class _AudioHomeViewState extends State<AudioHomeView> {
         DocumentReference metaRef = result.reference;
         String url = result.data()['url'];
 
+
         references.add(url);
         metaref.add(metaRef);
       });

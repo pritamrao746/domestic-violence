@@ -81,6 +81,7 @@ class _VideoPageState extends State<VideoPage> {
                 setState(() {
                   _counter = null;
                 });
+                Navigator.pop(context);
               },
             )
           ],
