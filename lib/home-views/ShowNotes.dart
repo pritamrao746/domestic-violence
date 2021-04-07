@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -9,12 +8,18 @@ import 'package:domestic_violence/classes/language.dart';
 import 'package:domestic_violence/localization/language_constants.dart';
 import 'package:domestic_violence/main.dart';
 
-class AddNotes extends StatefulWidget {
+class ShowNotes extends StatefulWidget {
+  final dynamic notesList;
+  final int index;
+
+  const ShowNotes({Key key, @required this.notesList,@required this.index})
+      : super(key: key);
+
   @override
-  _AddNotesState createState() => _AddNotesState();
+  _ShowNotesState createState() => _ShowNotesState();
 }
 
-class _AddNotesState extends State<AddNotes> {
+class _ShowNotesState extends State<ShowNotes> {
   final Color primaryColor=Color(0xff18203d);
   final Color secondaryColor = Color(0xff232c51);
   final Color logoGreen=Color(0xff25bcbb);
@@ -32,8 +37,8 @@ class _AddNotesState extends State<AddNotes> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title:Text(getTranslated(context, 'add_notes')),
-          backgroundColor: primaryColor,
+        title:Text(getTranslated(context, 'add_notes')),
+        backgroundColor: primaryColor,
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -96,7 +101,7 @@ class _AddNotesState extends State<AddNotes> {
   }
 
   NotusDocument _loadDocument(){
-    final Delta delta=Delta()..insert("Insert text here\n");
+    final Delta delta=Delta()..insert(widget.notesList[widget.index]['body']);
     return NotusDocument.fromDelta(delta);
   }
 
@@ -127,5 +132,4 @@ class _AddNotesState extends State<AddNotes> {
     }
   }
 }
-
 

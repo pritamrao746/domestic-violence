@@ -79,11 +79,7 @@ class _AudioHomeViewState extends State<AudioHomeView> {
       });
     });
 
-
-
-
     setState(() {
-
     });
   }
 }
