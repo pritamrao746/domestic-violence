@@ -103,15 +103,9 @@ class _AllPostsState extends State<AllPosts> {
                                 children:[
                                   Row(
                                     children:[
-                                      IconButton(
-                                        icon:Icon(Icons.favorite_border),
-                                        iconSize:30,
-                                        onPressed:(){
 
-                                        },
-                                      ),
                                       Text(
-                                        '10',
+                                        caption,
                                         style:TextStyle(
                                           fontSize:14.0,
                                           fontWeight:FontWeight.w600,
