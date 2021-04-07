@@ -25,7 +25,7 @@ class _EmergencyState extends State<Emergency> {
   void initState() {
     twilioFlutter = TwilioFlutter(
         accountSid: 'ACae4c21f091611009dacaa163499617b7',
-        authToken: '3f0599bb5c6cf4a00058c40fe63b5568',
+        authToken: 'c4993bacad69eee09507f79d2f0aafcf',
         twilioNumber: '+15182848514' );
     super.initState();
   }
