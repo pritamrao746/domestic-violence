@@ -91,8 +91,11 @@ class _FeatureButtonsViewState extends State<FeatureButtonsView> {
       _isUploading = true;
     });
     try {
-      var ref = firebaseStorage.ref('upload-voice-firebase').child(
-          _filePath.substring(_filePath.lastIndexOf('/'), _filePath.length));
+      String time = DateTime.now().toString();
+      String path = time+".text";
+      var ref = firebaseStorage.ref('upload-voice-firebase').child(path);
+
+      print("REFEERENCE IS IN FEATURE BUTTON = $ref");
 
       // getting encrypted data
       Uint8List encryptedData = encryptAudio(_filePath);
@@ -103,8 +106,7 @@ class _FeatureButtonsViewState extends State<FeatureButtonsView> {
       try {
         await task;
         String downloadUrl = await ref.getDownloadURL();
-        String time = DateTime.now().toString();
-        await uploadOnFirestore(downloadUrl, time);
+        await uploadOnFirestore(downloadUrl, time,ref.toString());
       } catch (e) {
         print("Some Error occurred e=$e");
       }
@@ -200,7 +202,7 @@ class _FeatureButtonsViewState extends State<FeatureButtonsView> {
     return encryptedData;
   }
 
-  uploadOnFirestore(String downloadUrl, String time) {
+  uploadOnFirestore(String downloadUrl, String time,var ref) {
     String uid = FirebaseAuth.instance.currentUser.uid;
     var audioRef = FirebaseFirestore.instance.collection('audio');
     audioRef.doc(time).set(

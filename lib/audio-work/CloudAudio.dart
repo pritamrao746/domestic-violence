@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:domestic_violence/MyEncrpytClass.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -8,11 +9,14 @@ import 'package:flutter/material.dart';
 import 'package:encrypt/encrypt.dart' as enc;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
+import 'package:domestic_violence/audio-work/AudioHomeView.dart';
 
 class CloudRecordListView extends StatefulWidget {
-  final List<Reference> references;
+  final List<String> references;
+  final List<DocumentReference> metaref;
+  final Function onUploadComplete;
 
-  const CloudRecordListView({Key key, @required this.references})
+  const CloudRecordListView({Key key, @required this.references,@required this.metaref,@required this.onUploadComplete})
       : super(key: key);
 
   @override
@@ -39,7 +43,7 @@ class _CloudRecordListViewState extends State<CloudRecordListView> {
       reverse: true,
       itemBuilder: (BuildContext context, int index) {
         return ListTile(
-          title: Text(widget.references.elementAt(index).name),
+          title: Text(index.toString()),
           trailing: Wrap(
             spacing:20,
             children:[
@@ -49,7 +53,7 @@ class _CloudRecordListViewState extends State<CloudRecordListView> {
               ),
               IconButton(
                 icon: Icon(Icons.delete),
-                onPressed: () => _onListTileButtonPressed(index),
+                onPressed: () => _onListTileDeleteButtonPressed(index),
               ),
             ],
           ),
@@ -64,8 +68,7 @@ class _CloudRecordListViewState extends State<CloudRecordListView> {
     if (_isPlaying == false) {
       // Play It
       _isPlaying = true;
-      String downloadUrl =
-      await widget.references.elementAt(index).getDownloadURL();
+      String downloadUrl = widget.references.elementAt(index);
 
       // Getting decrypted data back
       Uint8List decryptedAudio = await  decryptAudio(downloadUrl);
@@ -109,6 +112,13 @@ class _CloudRecordListViewState extends State<CloudRecordListView> {
     }
 
     return returnVal;
+  }
+
+  _onListTileDeleteButtonPressed(int index) {
+    widget.metaref.elementAt(index).delete();
+    setState(() {
+      widget.onUploadComplete();
+    });
   }
 
 }
